@@ -2,6 +2,7 @@ import argparse
 from argparse import ArgumentParser
 from fedtools import check_upstream_versions
 from fedtools import build_srpm
+from fedtools import review
 
 
 def register_check_versions_command(parser: ArgumentParser):
@@ -11,9 +12,15 @@ def register_check_versions_command(parser: ArgumentParser):
 def register_build_command(parser: ArgumentParser):
     parser.add_argument("filename")
     parser.add_argument("--arch", required=False, default=None)
-    parser.add_argument("--mock", action="store_true")
+    parser.add_argument("--mock", required=False, action="store_true")
     parser.add_argument("--mock-root", required=False, default="fedora-rawhide-x86_64")
     parser.set_defaults(func=build_srpm.build)
+
+
+def register_review_command(parser: ArgumentParser):
+    parser.add_argument("bug")
+    parser.add_argument("-y", required=False, action="store_true")
+    parser.set_defaults(func=review.make)
 
 
 def main():
@@ -33,6 +40,14 @@ def main():
         subparsers.add_parser(
             "check-versions",
             help="Pretty print a diff of packaged version and upstream version",
+        )
+    )
+    # Download files that make package review easier
+    register_review_command(
+        subparsers.add_parser(
+            "review",
+            help="Download spec and SRPM from URLs in review bug.\n"
+            "Optionally also download review.txt from fedora-review-service",
         )
     )
 

@@ -89,8 +89,8 @@ def build_binary_rpm_with_mock(srpm_path: str, mock_root: str):
         if "src.rpm" in path:
             continue
 
-        print(path)
         print()
+        print(path)
 
         subprocess.run(
             ["rpmlint", path],
