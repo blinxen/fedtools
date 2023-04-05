@@ -4,6 +4,7 @@ version = "0.2.0"
 description = "Python scripts that make the life of a fedora packager easier"
 readme = "README.md"
 authors = ["blinxen <h-k-81@hotmail.com>"]
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.11"
