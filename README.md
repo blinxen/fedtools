@@ -5,7 +5,7 @@ This is a collection of my python scripts which help me with fedora packaging st
 ## Build
 
 ```
-python3 -m build
+poetry build
 ```
 
 ## Install
