@@ -4,6 +4,7 @@ import requests
 import re
 import tabulate
 import subprocess
+from argparse import Namespace
 
 
 # Expressions inspired by
@@ -207,7 +208,7 @@ def generate_tabulate_list(packages: list) -> list[list]:
     return tabulate_list
 
 
-def check_versions():
+def check_versions(args: Namespace):
     packages = gather_package_information()
     if not packages:
         print("No packages were found!!")

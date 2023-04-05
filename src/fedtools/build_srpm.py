@@ -2,6 +2,7 @@ import glob
 import os
 import subprocess
 import shutil
+from argparse import Namespace
 
 
 def pretty_print_subprocess_result(msg, subprocess_result):
@@ -98,15 +99,15 @@ def build_binary_rpm_with_mock(srpm_path: str, mock_root: str):
         )
 
 
-def build(filename: str, arch: str, mock: str, mock_root: str):
+def build(args: Namespace):
 
-    if not os.path.exists(filename):
+    if not os.path.exists(args.filename):
         print("ERROR: Path to spec file does not exist")
         exit(1)
 
-    download_source(filename)
+    download_source(args.filename)
     copy_patches_to_source_dir()
-    srpm_path = build_srpm(filename, arch)
+    srpm_path = build_srpm(args.filename, args.arch)
 
-    if mock is True:
-        build_binary_rpm_with_mock(srpm_path, mock_root)
+    if args.mock is True:
+        build_binary_rpm_with_mock(srpm_path, args.mock_root)
