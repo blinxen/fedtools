@@ -10,6 +10,7 @@ def register_check_versions_command(parser: ArgumentParser):
 
 
 def register_build_command(parser: ArgumentParser):
+    parser.add_argument("specfile")
     parser.add_argument("--arch", required=False, default=None)
     parser.add_argument("--mock", required=False, action="store_true")
     parser.add_argument("--mock-root", required=False, default="fedora-rawhide-x86_64")

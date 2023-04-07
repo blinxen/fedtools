@@ -30,6 +30,17 @@ def get_srpm_file_name(path: str) -> str:
     return os.path.basename(srpm_path)
 
 
+def download_source(path: str):
+    result = subprocess.run(
+        ["spectool", "--get-files", path], capture_output=True
+    )
+    if result.returncode != 0:
+        pretty_print_subprocess_result(
+            "ERROR: spectool could not download the source file!", result
+        )
+        exit(1)
+
+
 def build_srpm_with_fedpkg(arch: str) -> str:
     command = ["fedpkg", "srpm"]
     if arch is not None:
@@ -75,6 +86,7 @@ def build_binary_rpm_with_mock(srpm_path: str, mock_root: str):
 
 
 def build(args: Namespace):
+    download_source(args.specfile)
     srpm_path = build_srpm_with_fedpkg(args.arch)
 
     if args.mock is True:
