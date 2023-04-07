@@ -30,31 +30,11 @@ def get_srpm_file_name(path: str) -> str:
     return os.path.basename(srpm_path)
 
 
-def download_source(path: str):
-    result = subprocess.run(
-        ["spectool", "--get-files", "--sourcedir", path], capture_output=True
-    )
-    if result.returncode != 0:
-        pretty_print_subprocess_result(
-            "ERROR: spectool could not download the source file!", result
-        )
-        exit(1)
-
-
-def copy_patches_to_source_dir():
-    for path in glob.glob("*.patch") + glob.glob("*.diff"):
-        shutil.copyfile(
-            os.path.abspath(path),
-            os.path.join(os.environ["FEDORA_RPMBUILD"], "SOURCES", path),
-        )
-
-
-def build_srpm(path: str, arch: str) -> str:
-    command = ["rpmbuild", "-bs"]
+def build_srpm_with_fedpkg(arch: str) -> str:
+    command = ["fedpkg", "srpm"]
     if arch is not None:
-        command.append("--target")
+        command.append("--arch")
         command.append(arch)
-    command.append(path)
 
     result = subprocess.run(command, capture_output=True)
     if result.returncode != 0:
@@ -63,12 +43,7 @@ def build_srpm(path: str, arch: str) -> str:
         )
         exit(1)
 
-    srpm_path = get_srpm_file_name(result.stdout.decode("utf-8"))
-    shutil.move(
-        os.path.join(os.environ["FEDORA_RPMBUILD"], "SRPMS", srpm_path), srpm_path
-    )
-
-    return srpm_path
+    return get_srpm_file_name(result.stdout.decode("utf-8"))
 
 
 def build_binary_rpm_with_mock(srpm_path: str, mock_root: str):
@@ -100,14 +75,7 @@ def build_binary_rpm_with_mock(srpm_path: str, mock_root: str):
 
 
 def build(args: Namespace):
-
-    if not os.path.exists(args.filename):
-        print("ERROR: Path to spec file does not exist")
-        exit(1)
-
-    download_source(args.filename)
-    copy_patches_to_source_dir()
-    srpm_path = build_srpm(args.filename, args.arch)
+    srpm_path = build_srpm_with_fedpkg(args.arch)
 
     if args.mock is True:
         build_binary_rpm_with_mock(srpm_path, args.mock_root)
