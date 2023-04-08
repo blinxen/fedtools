@@ -1,3 +1,6 @@
+# PYTHON_ARGCOMPLETE_OK
+
+import argcomplete
 import argparse
 from argparse import ArgumentParser
 from fedtools import check_upstream_versions
@@ -67,6 +70,7 @@ def main():
         )
     )
 
+    argcomplete.autocomplete(parser)
     args = parser.parse_args()
     args.func(args)
 
