@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 from fedtools import check_upstream_versions
 from fedtools import build_srpm
 from fedtools import review
+from fedtools import fedorapeople
 
 
 def register_check_versions_command(parser: ArgumentParser):
@@ -21,6 +22,11 @@ def register_review_command(parser: ArgumentParser):
     parser.add_argument("bug")
     parser.add_argument("-y", required=False, action="store_true")
     parser.set_defaults(func=review.make)
+
+
+def register_fedorapeople_upload(parser: ArgumentParser):
+    parser.add_argument("--username", required=False, default=None)
+    parser.set_defaults(func=fedorapeople.upload)
 
 
 def main():
@@ -48,6 +54,16 @@ def main():
             "review",
             help="Download spec and SRPM from URLs in review bug.\n"
             "Optionally also download review.txt from fedora-review-service",
+        )
+    )
+    # Copy files to fedorapeople to use in a package review
+    register_fedorapeople_upload(
+        subparsers.add_parser(
+            "fp-upload",
+            help="Upload spec file and SRPM in the current working directory to fedorapeople."
+            "This command will create a directory under /home/fedora/USERNAME/public_html "
+            "which will be named after the directory in which this command was executed in.\n"
+            "This will only work if you have set up the access to fedorapeople beforehand.",
         )
     )
 
