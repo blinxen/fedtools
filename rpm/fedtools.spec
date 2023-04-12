@@ -2,7 +2,7 @@
 
 Name:           python-%{package_name}
 Version:        0.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        CLI that make the life of a fedora packager easier
 
 License:        MIT
@@ -38,6 +38,7 @@ Summary:        %{summary}
 
 %install
 %pyproject_install
+install -D -p -m 0644 conf/fedtools.bash %{buildroot}/usr/share/bash-completion/completions/fedtools.bash
 
 
 %check
@@ -46,11 +47,15 @@ Summary:        %{summary}
 %files -n %{package_name}
 %doc README.md
 %license LICENSE
+/usr/share/bash-completion/completions/fedtools.bash
 %{python3_sitelib}/%{package_name}/
 %{python3_sitelib}/%{package_name}-%{version}.dist-info/
 %{_bindir}/%{package_name}
 
 
 %changelog
+* Wed Apr 12 2023 blinxen <h-k-81@hotmail.com> - 0.3.1-2
+- Add bash completion
+
 * Wed Apr 12 2023 blinxen <h-k-81@hotmail.com> - 0.3.1-1
 - Initial package
