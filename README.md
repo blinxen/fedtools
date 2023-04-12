@@ -11,5 +11,6 @@ poetry build
 ## Install
 
 ```
-pip3 install dist/fedtools-0.1.0.tar.gz
+dnf copr enable blinxen/python-fedtools
+dnf install fedtools
 ```
