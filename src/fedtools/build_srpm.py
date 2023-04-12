@@ -18,6 +18,7 @@ def pretty_print_subprocess_result(msg, subprocess_result):
 
 
 def get_srpm_file_name(path: str) -> str:
+    srpm_path = ""
     for line in path.split("\n"):
         if line.startswith("Wrote"):
             srpm_path = line.split(":")[1].strip()

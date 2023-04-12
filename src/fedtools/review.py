@@ -26,7 +26,7 @@ def ask_user(question: str) -> bool:
 def download_file_from_comments(
     dest_file_path: str,
     regex: Pattern,
-    comments: dict,
+    comments: list[dict],
     comment_id: int,
     skip_question: bool,
 ) -> bool:
