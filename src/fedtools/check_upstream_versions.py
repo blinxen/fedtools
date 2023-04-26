@@ -1,4 +1,5 @@
 import glob
+import os
 from urllib.parse import urlparse
 import requests
 import re
@@ -41,10 +42,10 @@ class Colors:
     RESET = "\033[0m"
 
 
-def gather_package_information() -> list[dict]:
+def gather_package_information(path: str) -> list[dict]:
     packages = []
     # Iterate over all found spec files
-    for path in glob.glob("*/*.spec"):
+    for path in glob.glob(os.path.join(path, "*/*.spec")):
         # Name of the package
         name = None
         # Current version of the pacakge
@@ -209,7 +210,7 @@ def generate_tabulate_list(packages: list) -> list[list]:
 
 
 def check_versions(args: Namespace):
-    packages = gather_package_information()
+    packages = gather_package_information(args.path)
     if not packages:
         print("No packages were found!!")
         exit(1)

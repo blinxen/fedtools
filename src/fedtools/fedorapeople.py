@@ -4,7 +4,7 @@ from argparse import Namespace
 from pathlib import Path
 
 
-def get_files_to_upload(path) -> list[str]:
+def get_files_to_upload(path: str) -> list[str]:
     files = []
     if os.path.exists(path):
         for file in os.listdir(path):
