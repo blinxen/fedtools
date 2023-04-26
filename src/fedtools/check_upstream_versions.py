@@ -25,6 +25,8 @@ requests_session = requests.Session()
 adapter = requests.adapters.HTTPAdapter(max_retries=10)
 requests_session.mount("https://", adapter)
 requests_session.mount("http://", adapter)
+# Version prefixes that can exist in upstream
+VERION_PREFIXES = ["v"]
 
 
 def http_get(url: str) -> requests.Response:
@@ -192,7 +194,7 @@ def generate_tabulate_list(packages: list) -> list[list]:
         if package["latest_version"] is None:
             color = Colors.RED
             package["latest_version"] = "-"
-        elif package["version"] == package["latest_version"]:
+        elif compare_two_versions(package["version"], package["latest_version"]):
             color = Colors.GREEN
         else:
             color = Colors.YELLOW
@@ -207,6 +209,25 @@ def generate_tabulate_list(packages: list) -> list[list]:
         )
 
     return tabulate_list
+
+
+def compare_two_versions(version1: str, version2: str) -> bool:
+    """Compare two version strings and return True if they match
+    Ignore possible prefixes
+
+    Returns:
+        bool: Whether the versions match or not
+    """
+
+    for prefix in VERION_PREFIXES:
+        if version1.startswith(prefix) and not version2.startswith(prefix):
+            version2 = f"{prefix}{version2}"
+            break
+        elif version2.startswith(prefix) and not version1.startswith(prefix):
+            version1 = f"{prefix}{version1}"
+            break
+
+    return version1 == version2
 
 
 def check_versions(args: Namespace):
