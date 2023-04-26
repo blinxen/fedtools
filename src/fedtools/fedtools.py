@@ -10,7 +10,12 @@ from fedtools import fedorapeople
 
 
 def register_check_versions_command(parser: ArgumentParser):
-    parser.add_argument("--path", required=False, default="./", help="Path to parent directory of all package directories")
+    parser.add_argument(
+        "--path",
+        required=False,
+        default="./",
+        help="Path to parent directory of all package directories",
+    )
     parser.set_defaults(func=check_upstream_versions.check_versions)
 
 

@@ -32,9 +32,7 @@ def get_srpm_file_name(path: str) -> str:
 
 
 def download_source(path: str):
-    result = subprocess.run(
-        ["spectool", "--get-files", path], capture_output=True
-    )
+    result = subprocess.run(["spectool", "--get-files", path], capture_output=True)
     if result.returncode != 0:
         pretty_print_subprocess_result(
             "ERROR: spectool could not download the source file!", result
