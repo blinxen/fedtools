@@ -28,6 +28,13 @@ def register_review_command(parser: ArgumentParser):
 
 
 def register_fedorapeople_upload(parser: ArgumentParser):
+    parser.add_argument(
+        "--path",
+        required=False,
+        default="./",
+        help="Path to directory, where the SPEC and SRPM files"
+        "should reside. Defaults to the current path",
+    )
     parser.add_argument("--username", required=False, default=None)
     parser.set_defaults(func=fedorapeople.upload)
 
