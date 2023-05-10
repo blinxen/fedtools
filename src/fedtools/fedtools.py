@@ -7,6 +7,7 @@ from fedtools import check_upstream_versions
 from fedtools import build_srpm
 from fedtools import review
 from fedtools import fedorapeople
+from fedtools import copr_review
 
 
 def register_check_versions_command(parser: ArgumentParser):
@@ -45,6 +46,11 @@ def register_fedorapeople_upload(parser: ArgumentParser):
     parser.set_defaults(func=fedorapeople.upload)
 
 
+def register_copr_review_command(parser: ArgumentParser):
+    parser.add_argument("srpm", help="Path to SRPM")
+    parser.set_defaults(func=copr_review.build)
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="fedtools",
@@ -80,6 +86,16 @@ def main():
             "This command will create a directory under /home/fedora/USERNAME/public_html "
             "which will be named after the directory in which this command was executed in.\n"
             "This will only work if you have set up the access to fedorapeople beforehand.",
+        )
+    )
+    # Run fedora-review in copr
+    register_copr_review_command(
+        subparsers.add_parser(
+            "copr-review",
+            help="Build SRPM in copr and run fedora-review after build."
+            "This command assumes the following:"
+            " 1. copr-cli is installed and configured properly"
+            " 2. You only want to build in rawhide",
         )
     )
 
