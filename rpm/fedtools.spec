@@ -1,7 +1,7 @@
 %global package_name fedtools
 
 Name:           python-%{package_name}
-Version:        0.3.2
+Version:        0.4.0
 Release:        1%{?dist}
 Summary:        CLI that make the life of a fedora packager easier
 
@@ -54,6 +54,10 @@ install -D -p -m 0644 conf/fedtools.bash %{buildroot}/usr/share/bash-completion/
 
 
 %changelog
+* Wed May 10 2023 blinxen <h-k-81@hotmail.com> - 0.4.0-1
+- Update to version 0.4.0
+- Add copr-review subcommand with which the user can build srpm in copr and run
+  fedora-review after. This is mostly used when reviewing packages.
 * Wed Apr 26 2023 blinxen <h-k-81@hotmail.com> - 0.3.2-1
 - Update to version 0.3.2
 - Allow user to set path for fp-upload and check-versions
