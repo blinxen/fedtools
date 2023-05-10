@@ -20,7 +20,7 @@ def build(args: Namespace):
             "--chroot",
             "fedora-rawhide-x86_64",
             "--fedora-review",
-            copr_project_name
+            copr_project_name,
         ],
         stdout=sys.stdout,
         stderr=sys.stderr,
@@ -31,12 +31,7 @@ def build(args: Namespace):
         exit(1)
 
     subprocess.run(
-        [
-            "copr-cli",
-            "build",
-            copr_project_name,
-            args.srpm
-        ],
+        ["copr-cli", "build", copr_project_name, args.srpm],
         stdout=sys.stdout,
         stderr=sys.stderr,
     )
