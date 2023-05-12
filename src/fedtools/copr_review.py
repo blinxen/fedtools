@@ -4,6 +4,11 @@ import sys
 
 
 def build(args: Namespace):
+
+    if not args.srpm.endswith(".src.rpm"):
+        print("ERROR: Only SRPM files are accepted")
+        exit(1)
+
     # We ask for the name because this is the simplest solution for now and I am too
     # lazy to get it automatically
     name = input("What is the name of the package?\n")
