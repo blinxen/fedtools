@@ -33,7 +33,6 @@ def build(args: Namespace):
 
     if copr_repo.returncode != 0:
         print("ERROR: Could not create copr project")
-        exit(1)
 
     subprocess.run(
         ["copr-cli", "build", copr_project_name, args.srpm],
