@@ -92,7 +92,7 @@ def create_directory(bug: dict) -> str:
     if re.fullmatch(r"[\-\_\Sa-zA-Z0-9]+", package_name) is not None:
         pathlib.Path(package_name).mkdir(exist_ok=True)
     else:
-        print(f"Package name ({package_name}) is not valid")
+        print(f"Package name \"{package_name}\" is not valid")
         exit(1)
 
     return package_name
