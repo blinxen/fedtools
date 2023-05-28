@@ -1,7 +1,7 @@
 %global package_name fedtools
 
 Name:           python-%{package_name}
-Version:        0.4.1
+Version:        0.4.2
 Release:        1%{?dist}
 Summary:        CLI that make the life of a fedora packager easier
 
@@ -54,6 +54,9 @@ install -D -p -m 0644 conf/fedtools.bash %{buildroot}/usr/share/bash-completion/
 
 
 %changelog
+* Sun May 28 2023 blinxen <h-k-81@hotmail.com> - 0.4.2-1
+- Update to version 0.4.2
+- Print URLs of the uploaded files in fp-upload subcommand
 * Fri May 12 2023 blinxen <h-k-81@hotmail.com> - 0.4.1-1
 - Update to version 0.4.1
 - Fix wrongly matched package name in review subcommand
@@ -66,9 +69,7 @@ install -D -p -m 0644 conf/fedtools.bash %{buildroot}/usr/share/bash-completion/
 - Update to version 0.3.2
 - Allow user to set path for fp-upload and check-versions
 - Ignore version prefixes in check-versions
-
 * Wed Apr 12 2023 blinxen <h-k-81@hotmail.com> - 0.3.1-2
 - Add bash completion
-
 * Wed Apr 12 2023 blinxen <h-k-81@hotmail.com> - 0.3.1-1
 - Initial package
