@@ -4,6 +4,9 @@ from argparse import Namespace
 from pathlib import Path
 
 
+FEDORA_PEOPLE_URL = "https://blinxen.fedorapeople.org"
+
+
 def get_files_to_upload(path: str) -> list[str]:
     files = []
     if os.path.exists(path):
@@ -40,8 +43,11 @@ def upload(args: Namespace):
     if files:
         print(f"Uploading: {' and '.join(files)}")
         remote = f"{username}@fedorapeople.org"
+        # Name of the package directory
+        package_directory = os.path.basename(os.path.abspath(args.path))
+        # Absolute path to the package directory
         package_path = os.path.join(
-            f"/home/fedora/{username}/public_html/{os.path.basename(os.path.abspath(args.path))}"
+            f"/home/fedora/{username}/public_html/{package_directory}"
         )
 
         # Create directory
@@ -53,5 +59,9 @@ def upload(args: Namespace):
                 f"{remote}:{package_path}",
             ]
         )
+
+        print("Links to the uploaded files:")
+        for file in files:
+            print(f"{FEDORA_PEOPLE_URL}/{package_directory}/{os.path.basename(file)}")
     else:
         print("No files to upload!")
