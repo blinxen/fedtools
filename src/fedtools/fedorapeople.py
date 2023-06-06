@@ -1,7 +1,7 @@
 import os
-import subprocess
 from argparse import Namespace
 from pathlib import Path
+from fedtools.utils import exec_cmd
 
 
 FEDORA_PEOPLE_URL = "https://blinxen.fedorapeople.org"
@@ -52,13 +52,16 @@ def upload(args: Namespace):
         )
 
         # Create directory
-        subprocess.run(["ssh", remote, "mkdir", "-p", package_path])
-        subprocess.run(
-            [
-                "rsync",
-                *files,
-                f"{remote}:{package_path}",
-            ]
+
+        exec_cmd(
+            "ssh",
+            [remote, "mkdir", "-p", package_path],
+            error_msg="Could not create target directory on the fedorapeople server!",
+        )
+        exec_cmd(
+            "rsync",
+            [*files, f"{remote}:{package_path}"],
+            error_msg="Could not upload the files to the fedorapeople server!",
         )
 
         print("Links to the uploaded files:")
@@ -69,6 +72,8 @@ def upload(args: Namespace):
             elif file.endswith(".src.rpm"):
                 prefix = "SRPM URL: "
 
-            print(f"{prefix}{FEDORA_PEOPLE_URL}/{package_directory}/{os.path.basename(file)}")
+            print(
+                f"{prefix}{FEDORA_PEOPLE_URL}/{package_directory}/{os.path.basename(file)}"
+            )
     else:
         print("No files to upload!")

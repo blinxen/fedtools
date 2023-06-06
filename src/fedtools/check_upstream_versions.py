@@ -4,8 +4,8 @@ from urllib.parse import urlparse
 import requests
 import re
 import tabulate
-import subprocess
 from argparse import Namespace
+from fedtools.utils import exec_cmd
 
 
 # Expressions inspired by
@@ -55,12 +55,17 @@ def gather_package_information(path: str) -> list[dict]:
         # Source of the package
         source = None
 
-        rpmspec = subprocess.run(["rpmspec", "-P", path], capture_output=True)
-        if rpmspec.returncode != 0:
+        result = exec_cmd(
+            "rpmspec",
+            ["-P", path],
+            check_result=False,
+            subprocess_arguments={"capture_output": True},
+        )
+        if result.returncode != 0:
             print(f"Error processing {path}")
             continue
 
-        content = rpmspec.stdout.decode("utf-8")
+        content = result.stdout.decode("utf-8")
         # Iterate over all line and get the needed information
         for line in content.split("\n"):
             if match := NAME_TAG.match(line):

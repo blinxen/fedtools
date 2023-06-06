@@ -1,20 +1,7 @@
 import glob
 import os
-import subprocess
-import shutil
 from argparse import Namespace
-
-
-def pretty_print_subprocess_result(msg, subprocess_result):
-    print(msg)
-    print()
-    print("----------------------STDOUT-------------------------")
-    print(subprocess_result.stdout.decode("utf-8"))
-    print("-----------------------------------------------------")
-    print()
-    print("---------------------STDERR--------------------------")
-    print(subprocess_result.stderr.decode("utf-8"))
-    print("-----------------------------------------------------")
+from fedtools.utils import exec_cmd
 
 
 def get_srpm_file_name(path: str) -> str:
@@ -32,38 +19,31 @@ def get_srpm_file_name(path: str) -> str:
 
 
 def download_source(path: str):
-    result = subprocess.run(["spectool", "--get-files", path], capture_output=True)
-    if result.returncode != 0:
-        pretty_print_subprocess_result(
-            "ERROR: spectool could not download the source file!", result
-        )
-        exit(1)
+    exec_cmd(
+        "spectool",
+        ["--get-files", path],
+        error_msg="ERROR: spectool could not download the source file!",
+    )
 
 
 def build_srpm_with_fedpkg(arch: str) -> str:
-    command = ["fedpkg", "srpm"]
+    cmd_arguments = ["srpm"]
     if arch is not None:
-        command.append("--arch")
-        command.append(arch)
+        cmd_arguments.append("--arch")
+        cmd_arguments.append(arch)
 
-    result = subprocess.run(command, capture_output=True)
-    if result.returncode != 0:
-        pretty_print_subprocess_result(
-            "ERROR: rpmbuild could not build the SRPM!", result
-        )
-        exit(1)
+    result = exec_cmd(
+        "fedpkg",
+        cmd_arguments,
+        error_msg="ERROR: rpmbuild could not build the SRPM!",
+    )
 
     return get_srpm_file_name(result.stdout.decode("utf-8"))
 
 
 def build_binary_rpm_with_mock(srpm_path: str, mock_root: str):
-    import sys
 
-    subprocess.run(
-        ["mock", "--root", mock_root, srpm_path],
-        stdout=sys.stdout,
-        stderr=sys.stderr,
-    )
+    exec_cmd("mock", ["--root", mock_root, srpm_path], tail_command=True)
 
     print()
     print("Running rpmlint")
@@ -76,12 +56,7 @@ def build_binary_rpm_with_mock(srpm_path: str, mock_root: str):
 
         print()
         print(path)
-
-        subprocess.run(
-            ["rpmlint", path],
-            stdout=sys.stdout,
-            stderr=sys.stderr,
-        )
+        exec_cmd("rpmlint", ["path"], tail_command=True)
 
 
 def build(args: Namespace):

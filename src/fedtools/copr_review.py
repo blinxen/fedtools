@@ -1,6 +1,5 @@
 from argparse import Namespace
-import subprocess
-import sys
+from fedtools.utils import exec_cmd
 
 
 def build(args: Namespace):
@@ -18,24 +17,19 @@ def build(args: Namespace):
 
     copr_project_name = f"fedora-review-{name}"
 
-    copr_repo = subprocess.run(
+    copr_repo = exec_cmd(
+        "copr-cli",
         [
-            "copr-cli",
             "create",
             "--chroot",
             "fedora-rawhide-x86_64",
             "--fedora-review",
             copr_project_name,
         ],
-        stdout=sys.stdout,
-        stderr=sys.stderr,
+        tail_command=True,
     )
 
     if copr_repo.returncode != 0:
         print("ERROR: Could not create copr project")
 
-    subprocess.run(
-        ["copr-cli", "build", copr_project_name, args.srpm],
-        stdout=sys.stdout,
-        stderr=sys.stderr,
-    )
+    exec_cmd("copr-cli", ["build", copr_project_name, args.srpm], tail_command=True)

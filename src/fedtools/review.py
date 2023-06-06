@@ -1,10 +1,10 @@
 from argparse import Namespace
-import subprocess
 import requests
 from re import Pattern
 import re
 import pathlib
 import os
+from fedtools.utils import exec_cmd
 
 
 BUGZILLA_URL = "https://bugzilla.redhat.com"
@@ -92,7 +92,7 @@ def create_directory(bug: dict) -> str:
     if re.fullmatch(r"[\-\_\Sa-zA-Z0-9]+", package_name) is not None:
         pathlib.Path(package_name).mkdir(exist_ok=True)
     else:
-        print(f"Package name \"{package_name}\" is not valid")
+        print(f'Package name "{package_name}" is not valid')
         exit(1)
 
     return package_name
@@ -115,4 +115,9 @@ def make(args: Namespace):
     # Run rust2rpm if this is a rust package
     if package_name.startswith("rust-"):
         with open(os.path.join(package_name, "generated"), "w") as f:
-            subprocess.run(["rust2rpm", package_name[5:], "--stdout"], stdout=f)
+            exec_cmd(
+                "rust2rpm",
+                ["--no-existence-check", "--stdout", package_name[5:]],
+                check_result=False,
+                subprocess_arguments={"stdout": f},
+            )
