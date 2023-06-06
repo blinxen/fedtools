@@ -29,7 +29,8 @@ def get_username(username: str) -> str:
 
     if username is None:
         print(
-            "Username was not specified with --username and HOME/fedora.upn does not exist"
+            "Username was not specified with --username and $HOME/.fedora.upn does not exist!\n"
+            "Either define --username or create the $HOME/.fedora.upn file."
         )
         exit(1)
 
@@ -62,6 +63,12 @@ def upload(args: Namespace):
 
         print("Links to the uploaded files:")
         for file in files:
-            print(f"{FEDORA_PEOPLE_URL}/{package_directory}/{os.path.basename(file)}")
+            prefix = ""
+            if file.endswith(".spec"):
+                prefix = "Spec URL: "
+            elif file.endswith(".src.rpm"):
+                prefix = "SRPM URL: "
+
+            print(f"{prefix}{FEDORA_PEOPLE_URL}/{package_directory}/{os.path.basename(file)}")
     else:
         print("No files to upload!")
