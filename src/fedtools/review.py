@@ -8,7 +8,7 @@ from fedtools.utils import exec_cmd
 
 
 BUGZILLA_URL = "https://bugzilla.redhat.com"
-PACKAGE_NAME_REGEX = re.compile(r"Review Request: ?(.*) ? -")
+PACKAGE_NAME_REGEX = re.compile(r"Review Request: ?(\S*) ? -")
 SPEC_FILE_REGEX = re.compile(r"Spec URL: ?(.*) ?\n")
 SRPM_FILE_REGEX = re.compile(r"SRPM URL: ?(.*) ?\n")
 REVIEW_FILE_REGEX = re.compile(r"Review template:\n ?(.*) ?\n")
