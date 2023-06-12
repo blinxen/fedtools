@@ -56,7 +56,7 @@ def build_binary_rpm_with_mock(srpm_path: str, mock_root: str):
 
         print()
         print(path)
-        exec_cmd("rpmlint", ["path"], tail_command=True)
+        exec_cmd("rpmlint", [path], tail_command=True)
 
 
 def build(args: Namespace):
