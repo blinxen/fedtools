@@ -60,14 +60,16 @@ def main():
     # Build SRPM
     register_build_command(
         subparsers.add_parser(
-            "build", help="Build SRPM and move it to the current directory"
+            "build",
+            help="Download all sources / patches and build SRPM.\n"
+            "Optionally, also execute mock (+rpmlint) on the built SRPM."
         )
     )
     # Check rpm versions
     register_check_versions_command(
         subparsers.add_parser(
             "check-versions",
-            help="Pretty print a diff of packaged version and upstream version",
+            help="Pretty print a diff of packaged version vs upstream version.",
         )
     )
     # Download files that make package review easier
@@ -75,7 +77,7 @@ def main():
         subparsers.add_parser(
             "review",
             help="Download spec and SRPM from URLs in review bug.\n"
-            "Optionally also download review.txt from fedora-review-service",
+            "Optionally, also download review.txt from fedora-review-service.",
         )
     )
     # Copy files to fedorapeople to use in a package review
