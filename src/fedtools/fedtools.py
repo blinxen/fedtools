@@ -8,6 +8,7 @@ from fedtools import build_srpm
 from fedtools import review
 from fedtools import fedorapeople
 from fedtools import copr_review
+from fedtools import post_rust_review
 
 
 def register_check_versions_command(parser: ArgumentParser):
@@ -51,6 +52,11 @@ def register_copr_review_command(parser: ArgumentParser):
     parser.set_defaults(func=copr_review.build)
 
 
+def register_rust_review_command(parser: ArgumentParser):
+    parser.add_argument("package_name", help="Name of the package")
+    parser.set_defaults(func=post_rust_review.make)
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="fedtools",
@@ -62,7 +68,7 @@ def main():
         subparsers.add_parser(
             "build",
             help="Download all sources / patches and build SRPM.\n"
-            "Optionally, also execute mock (+rpmlint) on the built SRPM."
+            "Optionally, also execute mock (+rpmlint) on the built SRPM.",
         )
     )
     # Check rpm versions
@@ -98,6 +104,16 @@ def main():
             "This command assumes the following:"
             " 1. copr-cli is installed and configured properly"
             " 2. You only want to build in rawhide",
+        )
+    )
+    # Rust sig tasks after a package review
+    register_rust_review_command(
+        subparsers.add_parser(
+            "post-rust-review",
+            help="This command does the following tasks:\n"
+            "1. Add package to release-monitoring.org\n"
+            "2. Track package with koschei (this step can only be done manually at the moment)\n"
+            "3. Give 'rust-sig' commit access to the package repository\n",
         )
     )
 

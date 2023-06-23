@@ -5,7 +5,7 @@ import requests
 import re
 import tabulate
 from argparse import Namespace
-from fedtools.utils import exec_cmd
+from fedtools.utils import exec_cmd, Colors
 
 
 # Expressions inspired by
@@ -34,14 +34,6 @@ def http_get(url: str) -> requests.Response:
     return requests_session.get(
         url, allow_redirects=True, headers={"User-Agent": user_agent}
     )
-
-
-class Colors:
-    RED = "\033[91m"
-    GREEN = "\033[92m"
-    YELLOW = "\033[93m"
-    WHITE = "\033[37m"
-    RESET = "\033[0m"
 
 
 def gather_package_information(path: str) -> list[dict]:
