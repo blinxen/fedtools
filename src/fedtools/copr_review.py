@@ -22,7 +22,7 @@ def build(args: Namespace):
         [
             "create",
             "--chroot",
-            "fedora-rawhide-x86_64",
+            args.chroot,
             "--fedora-review",
             copr_project_name,
         ],
