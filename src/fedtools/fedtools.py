@@ -49,7 +49,11 @@ def register_fedorapeople_upload(parser: ArgumentParser):
 
 def register_copr_review_command(parser: ArgumentParser):
     parser.add_argument("srpm", help="Path to SRPM")
-    parser.add_argument("--chroot", help="Name of the chroot to use", default="fedora-rawhide-x86_64")
+    parser.add_argument(
+        "--chroot",
+        help="Name of the chroot to use. Default is fedora-rawhide-x86_64",
+        default="fedora-rawhide-x86_64",
+    )
     parser.set_defaults(func=copr_review.build)
 
 
