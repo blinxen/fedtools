@@ -49,11 +49,6 @@ def register_fedorapeople_upload(parser: ArgumentParser):
 
 def register_copr_review_command(parser: ArgumentParser):
     parser.add_argument("srpm", help="Path to SRPM")
-    parser.add_argument(
-        "--chroot",
-        help="Name of the chroot to use. Default is fedora-rawhide-x86_64",
-        default="fedora-rawhide-x86_64",
-    )
     parser.set_defaults(func=copr_review.build)
 
 
@@ -108,7 +103,7 @@ def main():
             help="Build SRPM in copr and run fedora-review after build."
             "This command assumes the following:"
             " 1. copr-cli is installed and configured properly"
-            " 2. You only want to build in rawhide",
+            " 2. You only want to build in rawhide,f38,f37",
         )
     )
     # Rust sig tasks after a package review

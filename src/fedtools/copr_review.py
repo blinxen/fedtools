@@ -8,21 +8,18 @@ def build(args: Namespace):
         print("ERROR: Only SRPM files are accepted")
         exit(1)
 
-    # We ask for the name because this is the simplest solution for now and I am too
-    # lazy to get it automatically
-    name = input("What is the name of the package?\n")
-    if len(name) < 5:
-        print("Name must consist of at leat 5 characters")
-        exit(1)
-
-    copr_project_name = f"fedora-review-{name}"
+    copr_project_name = f"fedora-review-{args.srpm[:-8]}"
 
     copr_repo = exec_cmd(
         "copr-cli",
         [
             "create",
             "--chroot",
-            args.chroot,
+            "fedora-rawhide-x86_64",
+            "--chroot",
+            "fedora-38-x86_64",
+            "--chroot",
+            "fedora-37-x86_64",
             "--fedora-review",
             copr_project_name,
         ],
@@ -31,5 +28,7 @@ def build(args: Namespace):
 
     if copr_repo.returncode != 0:
         print("ERROR: Could not create copr project")
-
-    exec_cmd("copr-cli", ["build", copr_project_name, args.srpm], tail_command=True)
+    try:
+        exec_cmd("copr-cli", ["build", copr_project_name, args.srpm], tail_command=True)
+    except KeyboardInterrupt:
+        print("Ctrl-c was pressed")
