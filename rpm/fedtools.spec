@@ -1,7 +1,7 @@
 %global package_name fedtools
 
 Name:           python-%{package_name}
-Version:        0.7.0
+Version:        0.7.1
 Release:        1%{?dist}
 Summary:        CLI that make the life of a fedora packager easier
 
@@ -54,7 +54,10 @@ install -D -p -m 0644 conf/fedtools.bash %{buildroot}/usr/share/bash-completion/
 
 
 %changelog
-* Tue Jun 26 2023 blinxen <h-k-81@hotmail.com> - 0.7.0-1
+* Sat Sep 16 2023 blinxen <h-k-81@hotmail.com> - 0.7.1-1
+- Update to version 0.7.1
+- Add f39 to copr chroots in copr review command
+* Mon Jun 26 2023 blinxen <h-k-81@hotmail.com> - 0.7.0-1
 - Update to version 0.7.0
 * Sat Jun 24 2023 blinxen <h-k-81@hotmail.com> - 0.6.1-1
 - Update to version 0.6.1
