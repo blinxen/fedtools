@@ -27,11 +27,11 @@ def download_file_from_comments(
     dest_file_path: str,
     regex: Pattern,
     comments: list[dict],
-    comment_id: int,
+    possible_comment_ids: list[int],
     skip_question: bool,
 ) -> bool:
     for comment in comments:
-        if comment["count"] == comment_id:
+        if comment["count"] in possible_comment_ids:
             if match := regex.findall(comment["text"]):
                 if len(match) == 1 and (
                     skip_question is True
@@ -49,7 +49,7 @@ def download_specfile(package_name: str, comments: list[dict], skip_question: bo
     spec_file_path = os.path.join(package_name, package_name + ".spec")
     if (
         download_file_from_comments(
-            spec_file_path, SPEC_FILE_REGEX, comments, 0, skip_question
+            spec_file_path, SPEC_FILE_REGEX, comments, [0], skip_question
         )
         is False
     ):
@@ -61,7 +61,7 @@ def download_srpm(package_name: str, comments: list[dict], skip_question: bool):
     srpm_file_path = os.path.join(package_name, package_name + ".src.rpm")
     if (
         download_file_from_comments(
-            srpm_file_path, SRPM_FILE_REGEX, comments, 0, skip_question
+            srpm_file_path, SRPM_FILE_REGEX, comments, [0], skip_question
         )
         is False
     ):
@@ -75,7 +75,7 @@ def download_review_template(
     review_file_path = os.path.join(package_name, "review.txt")
     if (
         download_file_from_comments(
-            review_file_path, REVIEW_FILE_REGEX, comments, 1, skip_question
+            review_file_path, REVIEW_FILE_REGEX, comments, [1, 2], skip_question
         )
         is False
     ):
