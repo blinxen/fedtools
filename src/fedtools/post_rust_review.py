@@ -43,12 +43,6 @@ def monitor_package(crate_name: str, api_key: str):
     print(Colors.GREEN + "Package is now being monitored by Anitya" + Colors.RESET)
 
 
-def track_builds(package_name: str):
-    # No public API available
-    #
-    print(Colors.YELLOW + "Add package to koschei manually!!" + Colors.RESET)
-
-
 def rust_sig_access(package_name: str, api_key: str):
     # https://pagure.io/api/0/#general-tab
     response = requests.post(
@@ -76,5 +70,4 @@ def make(args: Namespace):
         else args.package_name
     )
     monitor_package(crate_name, anitya_api_key())
-    track_builds(args.package_name)
     rust_sig_access(args.package_name, pagure_api_key())
