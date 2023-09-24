@@ -114,7 +114,7 @@ def make(args: Namespace):
     download_review_template(package_name, comments, args.y)
     # Run rust2rpm if this is a rust package
     if package_name.startswith("rust-"):
-        with open(os.path.join(package_name, "generated"), "w") as f:
+        with open(os.path.join(package_name, "generated.spec"), "w") as f:
             exec_cmd(
                 "rust2rpm",
                 ["--no-existence-check", "--stdout", package_name[5:]],
