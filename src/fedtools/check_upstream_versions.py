@@ -116,7 +116,7 @@ def get_latest_package_version(package: dict) -> str:
         if "crate" not in repsonse:
             print(f"WARNING: Could not determine the latest version of {package_name}")
             return
-        latest_version = repsonse["crate"].get("newest_version", None)
+        latest_version = repsonse["crate"].get("max_version", None)
     elif (source := urlparse(package["source"])).netloc == "github.com":
         # [1:] --> ignore first slash in the path
         url_path = source.path[1:].split("/")
