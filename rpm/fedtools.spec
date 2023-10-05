@@ -1,7 +1,7 @@
 %global package_name fedtools
 
 Name:           python-%{package_name}
-Version:        0.7.2
+Version:        0.7.3
 Release:        1%{?dist}
 Summary:        CLI that make the life of a fedora packager easier
 
@@ -54,6 +54,8 @@ install -D -p -m 0644 conf/fedtools.bash %{buildroot}/usr/share/bash-completion/
 
 
 %changelog
+* Thu Oct 05 2023 blinxen <h-k-81@hotmail.com> - 0.7.3-1
+- Update to version 0.7.3
 * Sat Sep 23 2023 blinxen <h-k-81@hotmail.com> - 0.7.2-1
 - Update to version 0.7.2
 * Sat Sep 16 2023 blinxen <h-k-81@hotmail.com> - 0.7.1-1
