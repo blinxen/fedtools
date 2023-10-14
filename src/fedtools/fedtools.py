@@ -112,8 +112,7 @@ def main():
             "post-rust-review",
             help="This command does the following tasks:\n"
             "1. Add package to release-monitoring.org\n"
-            "2. Track package with koschei (this step can only be done manually at the moment)\n"
-            "3. Give 'rust-sig' commit access to the package repository\n",
+            "2. Give 'rust-sig' commit access to the package repository\n",
         )
     )
 
