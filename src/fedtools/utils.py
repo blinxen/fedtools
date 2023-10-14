@@ -43,7 +43,7 @@ def exec_cmd(
         cmd: Command to execture.
         cmd_arguments: Arguments that will be passed with the command.
         subprocess_arguments: Arguments that are specific to subprocess.
-        tail_command: Whether print the command stdout and stderr to the command line.
+        tail_command: Whether to print the command stdout and stderr to the command line.
                       If this is set to True then `check_result` is ignored.
         check_result: Whether to check the result of the executed command or not.
                       This will exit the program if it is set to True and the return

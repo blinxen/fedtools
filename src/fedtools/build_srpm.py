@@ -42,15 +42,15 @@ def build_srpm_with_fedpkg(arch: str) -> str:
 
 
 def build_binary_rpm_with_mock(srpm_path: str, mock_root: str):
-
-    exec_cmd("mock", ["--postinstall", "--root", mock_root, srpm_path], tail_command=True)
+    exec_cmd(
+        "mock", ["--postinstall", "--root", mock_root, srpm_path], tail_command=True
+    )
 
     print()
     print("Running rpmlint")
     print()
     # Run RPM lint on the built RPMs
     for path in glob.glob(f"/var/lib/mock/{mock_root}/result/*.rpm"):
-
         if "src.rpm" in path:
             continue
 

@@ -21,7 +21,7 @@ def register_check_versions_command(parser: ArgumentParser):
     parser.set_defaults(func=check_upstream_versions.check_versions)
 
 
-def register_build_command(parser: ArgumentParser):
+def register_build_srpm_command(parser: ArgumentParser):
     parser.add_argument("specfile")
     parser.add_argument("--arch", required=False, default=None)
     parser.add_argument("--mock", required=False, action="store_true")
@@ -64,10 +64,10 @@ def main():
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
     # Build SRPM
-    register_build_command(
+    register_build_srpm_command(
         subparsers.add_parser(
-            "build",
-            help="Download all sources / patches and build SRPM.\n"
+            "build-srpm",
+            help="Download all sources and build SRPM.\n"
             "Optionally, also execute mock (+rpmlint) on the built SRPM.",
         )
     )
