@@ -1,12 +1,6 @@
 import subprocess
 import sys
-import os
 from subprocess import CompletedProcess
-from pathlib import Path
-import json
-
-
-FEDTOOLS_CONFIG_FILE = os.path.join(Path.home(), ".config/fedtools.conf")
 
 
 class Colors:
@@ -77,27 +71,3 @@ def exec_cmd(
         exit(1)
 
     return result
-
-
-def anitya_api_key() -> str:
-    api_key = None
-    with open(FEDTOOLS_CONFIG_FILE, "r") as f:
-        api_key = json.load(f).get("anitya_api_key", None)
-
-    if api_key is None or len(api_key) == 0:
-        print(f"Anitya api key is not declared in {FEDTOOLS_CONFIG_FILE}!!")
-        exit(1)
-
-    return api_key
-
-
-def pagure_api_key() -> str:
-    api_key = None
-    with open(FEDTOOLS_CONFIG_FILE, "r") as f:
-        api_key = json.load(f).get("pagure_api_key", None)
-
-    if api_key is None or len(api_key) == 0:
-        print(f"Pagure api key is not declared in {FEDTOOLS_CONFIG_FILE}!!")
-        exit(1)
-
-    return api_key

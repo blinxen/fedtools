@@ -3,7 +3,6 @@ from fedtools.utils import exec_cmd
 
 
 def build(args: Namespace):
-
     if not args.srpm.endswith(".src.rpm"):
         print("ERROR: Only SRPM files are accepted")
         exit(1)

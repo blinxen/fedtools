@@ -1,6 +1,7 @@
 from argparse import Namespace
 import requests
-from fedtools.utils import anitya_api_key, pagure_api_key, Colors
+from fedtools.utils import Colors
+from fedtools.config import Config
 
 
 def monitor_package(crate_name: str, api_key: str):
@@ -69,5 +70,7 @@ def make(args: Namespace):
         if args.package_name.startswith("rust-")
         else args.package_name
     )
-    monitor_package(crate_name, anitya_api_key())
-    rust_sig_access(args.package_name, pagure_api_key())
+
+    config = Config().command_config(args.command)
+    monitor_package(crate_name, config.get("anitya_api_key", ""))
+    rust_sig_access(args.package_name, config.get("pagure_api_key", ""))
