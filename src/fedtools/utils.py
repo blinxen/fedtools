@@ -1,6 +1,7 @@
 import subprocess
 import sys
 from subprocess import CompletedProcess
+from typing import Callable
 
 
 class Colors:
@@ -71,3 +72,38 @@ def exec_cmd(
         exit(1)
 
     return result
+
+
+def check_value_of_key_in_list_of_dicts(
+    key: str, value: str, dicts_list: list[dict]
+) -> bool:
+    """Check whether a specific key-value pair in a list of dicts exists
+
+    Parameters:
+        key: Dictionary key that should be used to retrieve the value
+        value: Value that we are checking
+        dicts_list: List of dictionaries that will be iterated over
+
+    Returns: Boolean that indicates whether they key-value pairs exists or not
+    """
+    return value in list(map(lambda item: item.get(key, None), dicts_list))
+
+
+def search_for_dict_in_list_of_dicts_and_get_value(
+    key: str,
+    predicate: Callable,
+    dicts_list: list[dict],
+) -> str | None:
+    """Search for a specifc dict in list of dicts with `predicate` and return a value from it
+
+    Parameters:
+        key: Dictionary key that should be used to retrieve the value after the dictionary has been found
+        predicate: Lambda function that will be used to filter `dicts_list`
+        dicts_list: List of dictionaries that will be iterated over
+
+    Returns: This either returns the value that we are looking for or None
+    """
+    try:
+        return next(filter(predicate, dicts_list)).get(key, None)
+    except StopIteration:
+        return None

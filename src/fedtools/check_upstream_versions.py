@@ -5,7 +5,13 @@ import requests
 import re
 import tabulate
 from argparse import Namespace
-from fedtools.utils import exec_cmd, Colors
+from fedtools.config import Config
+from fedtools.utils import (
+    exec_cmd,
+    Colors,
+    check_value_of_key_in_list_of_dicts,
+    search_for_dict_in_list_of_dicts_and_get_value,
+)
 
 
 # Expressions inspired by
@@ -25,8 +31,6 @@ requests_session = requests.Session()
 adapter = requests.adapters.HTTPAdapter(max_retries=10)
 requests_session.mount("https://", adapter)
 requests_session.mount("http://", adapter)
-# Version prefixes that can exist in upstream
-VERION_PREFIXES = ["v"]
 
 
 def http_get(url: str) -> requests.Response:
@@ -82,56 +86,82 @@ def gather_package_information(path: str) -> list[dict]:
     return packages
 
 
-def get_latest_package_version(package: dict) -> str:
+def lookup_version_by_prefix(versions: list, prefix: str) -> str | None:
+    # We assume versions is already sorted from latest to oldest versions
+    for version in versions:
+        if version.startswith(prefix):
+            return version
+
+    return None
+
+
+def get_latest_package_version(package: dict, config: dict) -> str | None:
     latest_version = None
 
     if urlparse(package["source"]).netloc == "crates.io":
         # https://crates.io/api/v1/crates/<crate_name>
         if package["name"].startswith("rust-"):
-            package_name = package["name"][5:]
+            crate_name = package["name"][5:]
         else:
-            package_name = package["name"]
+            crate_name = package["name"]
 
         # This is the case when the package name
         # differs from the crate name
         # Example: libimagequant
-        if package_name not in package["source"]:
+        if crate_name not in package["source"]:
             # Here we assume that the crate source
             # has the format: https://crates.io/api/v1/crates/%name/%version/download#/%name-%version.crate
-            package_name = (
+            crate_name = (
                 package["source"]
                 .split("https://crates.io/api/v1/crates/")[1]
                 .split("/")[0]
             )
 
-        repsonse = http_get(f"https://crates.io/api/v1/crates/{package_name}")
+        response = http_get(f"https://crates.io/api/v1/crates/{crate_name}")
 
-        if repsonse.status_code != 200:
-            print(f"Could not fetch crate information for {package_name}")
-            print(f"REASON: {repsonse.text}")
+        if response.status_code != 200:
+            print(f"Could not fetch crate information for {crate_name}")
+            print(f"REASON: {response.text}")
             return
         else:
-            repsonse = repsonse.json()
+            response = response.json()
 
-        if "crate" not in repsonse:
-            print(f"WARNING: Could not determine the latest version of {package_name}")
+        if "crate" not in response:
+            print(f"WARNING: Could not determine the latest version of {crate_name}")
             return
-        latest_version = repsonse["crate"].get("max_version", None)
+        latest_version = response["crate"].get("max_version", None)
     elif (source := urlparse(package["source"])).netloc == "github.com":
         # [1:] --> ignore first slash in the path
         url_path = source.path[1:].split("/")
         if url_path[2] in ("archive", "releases"):
             # https://github.com/<user>/<proj>/archive/<tag>/<file>
             # https://github.com/<user>/<proj>/releases/download/<tag>/<file>
-            project_path = f"{url_path[0]}/{url_path[1]}"
+            project_org = url_path[0]
+            project_name = url_path[1]
         elif url_path[0] == "downloads":
-            project_path = f"{url_path[1]}/{url_path[2]}"
+            project_org = url_path[1]
+            project_name = url_path[2]
+        else:
+            print("Unsupported source URL for GitHub!!")
+            return
 
-        latest_version = (
-            http_get(f"https://api.github.com/repos/{project_path}/tags")
-            .json()[0]
-            .get("name", None)
-        )
+        response = http_get(
+            f"https://api.github.com/repos/{project_org}/{project_name}/tags"
+        ).json()
+        # Check whether we have to look for a specific version prefix
+        if check_value_of_key_in_list_of_dicts(
+            "name", project_name, config["upstream-version-prefix"]
+        ):
+            latest_version = lookup_version_by_prefix(
+                list(map(lambda version: version["name"], response)),
+                search_for_dict_in_list_of_dicts_and_get_value(
+                    "prefix",
+                    lambda item: item.get("name") == project_name,
+                    config["upstream-version-prefix"],
+                ),
+            )
+        else:
+            latest_version = response[0].get("name", None)
     elif "gitlab" in (source := urlparse(package["source"])).netloc:
         # [1:] --> ignore first slash in the path
         project_path = source.path[1:].split("/-/")
@@ -156,13 +186,23 @@ def get_latest_package_version(package: dict) -> str:
             else:
                 project_id = project_id[0].get("id")
 
-        latest_version = (
-            http_get(
-                f"https://{source.netloc}/api/v4/projects/{project_id}/repository/tags?order_by=updated&sort=desc"
+        response = http_get(
+            f"https://{source.netloc}/api/v4/projects/{project_id}/repository/tags?order_by=updated&sort=desc"
+        ).json()
+        # Check whether we have to look for a specific version prefix
+        if check_value_of_key_in_list_of_dicts(
+            "name", project_name, config["upstream-version-prefix"]
+        ):
+            latest_version = lookup_version_by_prefix(
+                list(map(lambda version: version["name"], response)),
+                search_for_dict_in_list_of_dicts_and_get_value(
+                    "prefix",
+                    lambda item: item.get("name") == project_name,
+                    config["upstream-version-prefix"],
+                ),
             )
-            .json()[0]
-            .get("name", None)
-        )
+        else:
+            latest_version = response[0].get("name", None)
     elif (source := urlparse(package["source"])).netloc in (
         "files.pythonhosted.org",
         "pypi.python.org",
@@ -180,7 +220,7 @@ def get_latest_package_version(package: dict) -> str:
     return latest_version
 
 
-def generate_tabulate_list(packages: list) -> list[list]:
+def generate_tabulate_list(packages: list, version_prefixes: list[str]) -> list[list]:
     """Generate the list that will be used as the tabulate input
 
     Returns:
@@ -191,7 +231,9 @@ def generate_tabulate_list(packages: list) -> list[list]:
         if package["latest_version"] is None:
             color = Colors.RED
             package["latest_version"] = "-"
-        elif compare_two_versions(package["version"], package["latest_version"]):
+        elif compare_two_versions(
+            package["version"], package["latest_version"], version_prefixes
+        ):
             color = Colors.GREEN
         else:
             color = Colors.YELLOW
@@ -208,7 +250,9 @@ def generate_tabulate_list(packages: list) -> list[list]:
     return tabulate_list
 
 
-def compare_two_versions(version1: str, version2: str) -> bool:
+def compare_two_versions(
+    version1: str, version2: str, version_prefixes: list[str]
+) -> bool:
     """Compare two version strings and return True if they match
     Ignore possible prefixes
 
@@ -216,7 +260,7 @@ def compare_two_versions(version1: str, version2: str) -> bool:
         bool: Whether the versions match or not
     """
 
-    for prefix in VERION_PREFIXES:
+    for prefix in version_prefixes:
         if version1.startswith(prefix) and not version2.startswith(prefix):
             version2 = f"{prefix}{version2}"
             break
@@ -234,8 +278,10 @@ def check_versions(args: Namespace):
         exit(1)
 
     updatable_packages = []
+    config = Config().command_config(args.command)
+
     for package in packages:
-        package["latest_version"] = get_latest_package_version(package)
+        package["latest_version"] = get_latest_package_version(package, config)
         updatable_packages.append(package)
     # Sort packages
     updatable_packages.sort(
@@ -248,7 +294,9 @@ def check_versions(args: Namespace):
     if updatable_packages:
         print(
             tabulate.tabulate(
-                generate_tabulate_list(updatable_packages),
+                generate_tabulate_list(
+                    updatable_packages, config.get("version-prefix", [])
+                ),
                 headers=["Name", "Version", "Latest version", "Source"],
                 tablefmt="simple_grid",
             )
