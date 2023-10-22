@@ -30,6 +30,11 @@ options:
   -h, --help            show this help message and exit
 ```
 
+## Configuration
+
+The configuration file for `fedtools` must be places under `$HOME/.config/fedtools.toml`.
+See [fedtools.toml](./fedtools.toml) for an example.
+
 ## Development
 
 ```

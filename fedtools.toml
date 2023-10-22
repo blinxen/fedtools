@@ -1,0 +1,16 @@
+[check-versions]
+
+# Possible version prefixes that should be checked
+# This is used when comparing upstream latest version with
+# the version defined in the SPEC file.
+version-prefix = ["v"]
+
+# Definition of upstream version prefix that must be present
+# Only consider versions that have the defined prefix
+[[check-versions.upstream-version-prefix]]
+name = "example-package"
+prefix = "v1"
+
+[post-rust-review]
+anitya_api_key = ""
+pagure_api_key = ""
