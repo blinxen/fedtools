@@ -223,8 +223,12 @@ def get_latest_package_version(package: dict, config: dict) -> str | None:
 def generate_tabulate_list(packages: list, version_prefixes: list[str]) -> list[list]:
     """Generate the list that will be used as the tabulate input
 
-    Returns:
-        list[list]: Formated list with all packages that need to be updated
+    Parameters:
+        packages: List of packages that will be displayed
+        version_prefixes: Version prefixes that will be forwarded to the compare_two_versions
+                          function.
+
+    Returns: Formated list with all packages that need to be updated
     """
     tabulate_list = []
     for package in packages:
@@ -256,8 +260,12 @@ def compare_two_versions(
     """Compare two version strings and return True if they match
     Ignore possible prefixes
 
-    Returns:
-        bool: Whether the versions match or not
+    Parameters:
+        version1 / version2: Versions that should be compared
+        version_prefixes: List of version prefix that should be tried. In some cases
+                          upstream uses diffrent version names, such a "v" or "v1".
+
+    Returns: Boolean that indicates whether the versions match or not
     """
 
     for prefix in version_prefixes:

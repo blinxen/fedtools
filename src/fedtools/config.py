@@ -27,4 +27,11 @@ class Config:
                 exit(1)
 
     def command_config(self, command_name) -> dict:
+        """Return command specific configuration from the config file
+
+        Parameters:
+            command_name: Command name for which the configuration should be retrieved
+
+        Returns: Command configuration in the form of a dictionary
+        """
         return self.__config.get(command_name)

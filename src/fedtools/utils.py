@@ -46,6 +46,9 @@ def exec_cmd(
                       This argument will be ignored if `tail_command` is set to True.
         error_msg: Error message if the executed command fails.
                    This will be used when `check_result` is set to True.
+
+    Returns: Returns result if the process could be completed successfully. Otherwise
+             this function will exit with exit code 1 and print the defined error message.
     """
 
     # Workaround for having a dict for subprocess_arguments as the default value

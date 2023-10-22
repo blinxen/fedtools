@@ -5,6 +5,13 @@ from fedtools.config import Config
 
 
 def monitor_package(crate_name: str, api_key: str):
+    """Register package at release-monitoring.org
+
+    Parameters:
+
+        crate_name: Crate name that should be registered
+        api_key: API key that should be used for authentication
+    """
     # https://release-monitoring.org/static/docs/api.html#http-api-v2
     project_data = {
         "name": crate_name,
@@ -45,6 +52,12 @@ def monitor_package(crate_name: str, api_key: str):
 
 
 def rust_sig_access(package_name: str, api_key: str):
+    """Give 'rust-sig' group access to the pagure repository
+
+    Parameters:
+        package_name: Package name which permissions should be altered
+        api_key: API key that should be used for authentication
+    """
     # https://pagure.io/api/0/#general-tab
     response = requests.post(
         f"https://src.fedoraproject.org/api/0/rpms/{package_name}/git/modifyacls",

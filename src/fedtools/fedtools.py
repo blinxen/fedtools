@@ -61,6 +61,7 @@ def main():
     parser = argparse.ArgumentParser(
         prog="fedtools",
         description="Collection of python scripts that help with fedora packaging / maintanence tasks",
+        formatter_class=argparse.RawTextHelpFormatter,
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
     # Build SRPM
@@ -90,8 +91,8 @@ def main():
     register_fedorapeople_upload(
         subparsers.add_parser(
             "fp-upload",
-            help="Upload spec file and SRPM in the current working directory to fedorapeople."
-            "This command will create a directory under /home/fedora/USERNAME/public_html "
+            help="Upload spec file and SRPM in the current working directory to fedorapeople.\n"
+            "This command will create a directory under `/home/fedora/USERNAME/public_html`\n"
             "which will be named after the directory in which this command was executed in.\n"
             "This will only work if you have set up the access to fedorapeople beforehand.",
         )
@@ -100,10 +101,10 @@ def main():
     register_copr_review_command(
         subparsers.add_parser(
             "copr-review",
-            help="Build SRPM in copr and run fedora-review after build."
-            "This command assumes the following:"
-            " 1. copr-cli is installed and configured properly"
-            " 2. You only want to build in rawhide,f38,f37",
+            help="Build SRPM in copr and run fedora-review after build.\n"
+            "This command assumes the following:\n"
+            "\t1. copr-cli is installed and configured properly\n"
+            "\t2. You only want to build in rawhide,f39,f38".expandtabs(4),
         )
     )
     # Rust sig tasks after a package review
@@ -111,8 +112,10 @@ def main():
         subparsers.add_parser(
             "post-rust-review",
             help="This command does the following tasks:\n"
-            "1. Add package to release-monitoring.org\n"
-            "2. Give 'rust-sig' commit access to the package repository\n",
+            "\t1. Add package to release-monitoring.org\n"
+            "\t2. Give 'rust-sig' commit access to the package repository\n".expandtabs(
+                4
+            ),
         )
     )
 
