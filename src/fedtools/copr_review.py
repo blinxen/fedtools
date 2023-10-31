@@ -13,6 +13,7 @@ def build(args: Namespace):
         "copr-cli",
         [
             "create",
+            "--fedora-review",
             "--chroot",
             "fedora-rawhide-x86_64",
             "--chroot",
