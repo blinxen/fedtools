@@ -2,6 +2,7 @@ import glob
 import os
 from argparse import Namespace
 from fedtools.utils import exec_cmd
+from fedtools.config import Config
 
 
 def get_srpm_file_name(path: str) -> str:
@@ -41,10 +42,12 @@ def build_srpm_with_fedpkg(arch: str) -> str:
     return get_srpm_file_name(result.stdout.decode("utf-8"))
 
 
-def build_binary_rpm_with_mock(srpm_path: str, mock_root: str):
-    exec_cmd(
-        "mock", ["--postinstall", "--root", mock_root, srpm_path], tail_command=True
-    )
+def build_binary_rpm_with_mock(
+    srpm_path: str, mock_root: str, mock_arguments: list[str]
+):
+    mock_arguments.extend(["--root", mock_root])
+    mock_arguments.append(srpm_path)
+    exec_cmd("mock", mock_arguments, tail_command=True)
 
     print()
     print("Running rpmlint")
@@ -64,4 +67,9 @@ def build(args: Namespace):
     srpm_path = build_srpm_with_fedpkg(args.arch)
 
     if args.mock is True:
-        build_binary_rpm_with_mock(srpm_path, args.mock_root)
+        config = Config().command_config(args.command)
+        build_binary_rpm_with_mock(
+            srpm_path,
+            config.get("mock-root", "fedora-rawhide-x86_64"),
+            config.get("mock-arguments", []),
+        )

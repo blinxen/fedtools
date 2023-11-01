@@ -25,7 +25,6 @@ def register_build_srpm_command(parser: ArgumentParser):
     parser.add_argument("specfile")
     parser.add_argument("--arch", required=False, default=None)
     parser.add_argument("--mock", required=False, action="store_true")
-    parser.add_argument("--mock-root", required=False, default="fedora-rawhide-x86_64")
     parser.set_defaults(func=build_srpm.build)
 
 
