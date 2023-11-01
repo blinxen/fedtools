@@ -14,3 +14,11 @@ prefix = "v1"
 [post-rust-review]
 anitya_api_key = ""
 pagure_api_key = ""
+
+# Arguments to pass to mock
+[build-srpm]
+mock-root = "fedora-rawhide-x86_64"
+mock-arguments = [
+    "--postinstall",
+    "--enablerepo", "local"
+]
