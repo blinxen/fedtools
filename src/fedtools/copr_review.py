@@ -19,7 +19,7 @@ def build(args: Namespace):
             "--chroot",
             "fedora-rawhide-aarch64",
             "--chroot",
-            " fedora-rawhide-s390x ",
+            "fedora-rawhide-s390x",
             "--chroot",
             "fedora-rawhide-ppc64le",
             copr_project_name,
