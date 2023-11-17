@@ -29,7 +29,4 @@ def build(args: Namespace):
 
     if copr_repo.returncode != 0:
         print("ERROR: Could not create copr project")
-    try:
-        exec_cmd("copr-cli", ["build", copr_project_name, args.srpm], tail_command=True)
-    except KeyboardInterrupt:
-        print("Ctrl-c was pressed")
+    exec_cmd("copr-cli", ["build", copr_project_name, args.srpm], tail_command=True)

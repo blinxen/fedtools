@@ -67,8 +67,12 @@ def exec_cmd(
     elif check_result is True:
         subprocess_arguments["capture_output"] = True
 
-    # Execute command with the defined options
-    result = subprocess.run(final_cmd, **subprocess_arguments)
+    try:
+        # Execute command with the defined options
+        result = subprocess.run(final_cmd, **subprocess_arguments)
+    except KeyboardInterrupt:
+        print(f"{Colors.RED}\nStopping command execution.{Colors.RESET}")
+        exit(1)
 
     if tail_command is False and check_result is True and result.returncode != 0:
         __pretty_print_subprocess_result(error_msg, result)
