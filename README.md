@@ -48,6 +48,6 @@ poetry run fedtools
 Fedora:
 
 ```
-dnf copr enable blinxen/python-fedtools
+dnf copr enable blinxen/tools
 dnf install fedtools
 ```
