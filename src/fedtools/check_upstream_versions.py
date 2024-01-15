@@ -12,6 +12,7 @@ from fedtools.utils import (
     check_value_of_key_in_list_of_dicts,
     search_for_dict_in_list_of_dicts_and_get_value,
 )
+import git
 
 
 # Expressions inspired by
@@ -80,6 +81,8 @@ def gather_package_information(path: str) -> list[dict]:
                 "name": name,
                 "source": source,
                 "version": version,
+                # This is used to get the state of the git directory
+                "git_path": os.path.dirname(os.path.abspath(path)),
             }
         )
 
@@ -232,6 +235,7 @@ def generate_tabulate_list(packages: list, version_prefixes: list[str]) -> list[
     """
     tabulate_list = []
     for package in packages:
+        git_dirty = " (dirty)" if git.Repo(package["git_path"]).is_dirty() else ""
         if package["latest_version"] is None:
             color = Colors.RED
             package["latest_version"] = "-"
@@ -244,7 +248,7 @@ def generate_tabulate_list(packages: list, version_prefixes: list[str]) -> list[
 
         tabulate_list.append(
             [
-                color + package["name"] + Colors.RESET,
+                color + package["name"] + git_dirty + Colors.RESET,
                 color + package["version"] + Colors.RESET,
                 color + package["latest_version"] + Colors.RESET,
                 color + package["source"] + Colors.RESET,

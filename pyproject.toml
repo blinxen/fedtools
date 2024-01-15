@@ -12,6 +12,7 @@ python = "^3.11"
 requests = "*"
 tabulate = "*"
 argcomplete = "*"
+GitPython = "*"
 
 [tool.poetry.scripts]
 fedtools = "fedtools.fedtools:main"
