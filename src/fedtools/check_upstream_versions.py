@@ -291,20 +291,21 @@ def check_versions(args: Namespace):
     for package in packages:
         package["latest_version"] = get_latest_package_version(package, config)
         updatable_packages.append(package)
-    # Sort packages
-    updatable_packages.sort(
-        key=lambda package: package["latest_version"] == package["version"],
-        reverse=True,
+
+    tabulate_list = generate_tabulate_list(
+        updatable_packages, config.get("version-prefix", [])
     )
-    updatable_packages.sort(
-        key=lambda package: package["latest_version"] is None, reverse=True
+    # Sort packages
+    tabulate_list.sort(
+        key=lambda package: Colors.YELLOW in package[0],
+    )
+    tabulate_list.sort(
+        key=lambda package: Colors.RED in package[0],
     )
     if updatable_packages:
         print(
             tabulate.tabulate(
-                generate_tabulate_list(
-                    updatable_packages, config.get("version-prefix", [])
-                ),
+                tabulate_list,
                 headers=["Name", "Version", "Latest version", "Source"],
                 tablefmt="simple_grid",
             )
