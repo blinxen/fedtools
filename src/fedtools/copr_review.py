@@ -1,32 +1,59 @@
 from argparse import Namespace
-from fedtools.utils import exec_cmd
+# https://python-copr.readthedocs.io/en/latest/ClientV3.html
+from copr.v3 import Client
+from copr.v3.exceptions import CoprRequestException
+import os
+
+from fedtools.utils import Colors
+
+
+CHROOTS = [
+    "fedora-rawhide-x86_64",
+    "fedora-rawhide-aarch64",
+    "fedora-rawhide-s390x",
+    "fedora-rawhide-ppc64le",
+]
+REVIEW_PREFIX = "fedora-review"
+
+
+def create_copr_repo(client: Client, project_name: str):
+    try:
+        client.project_proxy.add(
+            client.base_proxy.auth_username(), project_name, CHROOTS
+        )
+    except CoprRequestException as e:
+        print(Colors.RED + str(e) + Colors.RESET)
+
+
+def copr_build(client: Client, project_name: str, srpm_path: str) -> int:
+    build = client.build_proxy.create_from_file(
+        client.base_proxy.auth_username(), project_name, srpm_path
+    )
+    return build.id
+
+
+def cleanup_review_copr_repos(client):
+    projects = client.project_proxy.search(
+        f"{client.base_proxy.auth_username()}/{REVIEW_PREFIX}"
+    )
+    for project in projects:
+        client.project_proxy.delete(client.base_proxy.auth_username(), project["name"])
 
 
 def build(args: Namespace):
+    client = Client.create_from_config_file()
+    if args.cleanup is True:
+        cleanup_review_copr_repos(client)
+        exit(0)
+
     if not args.srpm.endswith(".src.rpm"):
         print("ERROR: Only SRPM files are accepted")
         exit(1)
 
-    copr_project_name = f"fedora-review-{args.srpm[:-8]}"
+    copr_project_name = f"{REVIEW_PREFIX}-{os.path.basename(args.srpm)[:-8]}"
 
-    copr_repo = exec_cmd(
-        "copr-cli",
-        [
-            "create",
-            "--fedora-review",
-            "--chroot",
-            "fedora-rawhide-x86_64",
-            "--chroot",
-            "fedora-rawhide-aarch64",
-            "--chroot",
-            "fedora-rawhide-s390x",
-            "--chroot",
-            "fedora-rawhide-ppc64le",
-            copr_project_name,
-        ],
-        tail_command=True,
+    create_copr_repo(client, copr_project_name)
+    build_id = copr_build(client, copr_project_name, args.srpm)
+    print(
+        f"https://copr.fedorainfracloud.org/coprs/{client.base_proxy.auth_username()}/{copr_project_name}/build/{build_id}/"
     )
-
-    if copr_repo.returncode != 0:
-        print("ERROR: Could not create copr project")
-    exec_cmd("copr-cli", ["build", copr_project_name, args.srpm], tail_command=True)

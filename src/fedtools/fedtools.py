@@ -47,7 +47,13 @@ def register_fedorapeople_upload(parser: ArgumentParser):
 
 
 def register_copr_review_command(parser: ArgumentParser):
-    parser.add_argument("srpm", help="Path to SRPM")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--srpm", help="Path to SRPM")
+    group.add_argument(
+        "--cleanup",
+        help=f"Delete all copr projects that have {copr_review.REVIEW_PREFIX} as a prefix",
+        action="store_true",
+    )
     parser.set_defaults(func=copr_review.build)
 
 
