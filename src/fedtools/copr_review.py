@@ -41,6 +41,10 @@ def cleanup_review_copr_repos(client):
 
 
 def build(args: Namespace):
+    if args.srpm is None and args.cleanup is False:
+        print("No command specified, use --help to see all options.")
+        exit(1)
+
     client = Client.create_from_config_file()
     if args.cleanup is True:
         cleanup_review_copr_repos(client)
