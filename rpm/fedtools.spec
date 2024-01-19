@@ -1,7 +1,7 @@
 %global package_name fedtools
 
 Name:           python-%{package_name}
-Version:        0.10.0
+Version:        0.10.1
 Release:        1%{?dist}
 Summary:        CLI that make the life of a fedora packager easier
 
@@ -47,14 +47,16 @@ install -D -p -m 0644 conf/fedtools.bash %{buildroot}/usr/share/bash-completion/
 %files -n %{package_name}
 %doc README.md
 %license LICENSE
-/usr/share/bash-completion/completions/fedtools.bash
+%{bash_completions_dir}/fedtools.bash
 %{python3_sitelib}/%{package_name}/
 %{python3_sitelib}/%{package_name}-%{version}.dist-info/
 %{_bindir}/%{package_name}
 
 
 %changelog
-* Mon Nov 15 2024 blinxen <h-k-81@hotmail.com> - 0.10.0-1
+* Fri Jan 19 2024 blinxen <h-k-81@hotmail.com> - 0.10.1-1
+- Update to version 0.10.1
+* Mon Jan 15 2024 blinxen <h-k-81@hotmail.com> - 0.10.0-1
 - Update to version 0.10.0
 * Thu Nov 23 2023 blinxen <h-k-81@hotmail.com> - 0.9.2-1
 - Update to version 0.9.2
