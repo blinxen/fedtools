@@ -1,4 +1,5 @@
 from argparse import Namespace
+
 # https://python-copr.readthedocs.io/en/latest/ClientV3.html
 from copr.v3 import Client
 from copr.v3.exceptions import CoprRequestException
@@ -19,7 +20,7 @@ REVIEW_PREFIX = "fedora-review"
 def create_copr_repo(client: Client, project_name: str):
     try:
         client.project_proxy.add(
-            client.base_proxy.auth_username(), project_name, CHROOTS
+            client.base_proxy.auth_username(), project_name, CHROOTS, fedora_review=True
         )
     except CoprRequestException as e:
         print(Colors.RED + str(e) + Colors.RESET)
