@@ -151,7 +151,7 @@ def get_latest_package_version(package: dict, config: dict) -> str | None:
         response = http_get(
             f"https://api.github.com/repos/{project_org}/{project_name}/tags"
         ).json()
-        if "API rate limit exceeded" in response.get("message", ""):
+        if response is dict and "API rate limit exceeded" in response.get("message", ""):
             return None
         # Check whether we have to look for a specific version prefix
         if check_value_of_key_in_list_of_dicts(
