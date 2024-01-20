@@ -1,31 +1,22 @@
-%global package_name fedtools
-
-Name:           python-%{package_name}
-Version:        0.10.1
+Name:           fedtools
+Version:        0.10.2
 Release:        1%{?dist}
 Summary:        CLI that make the life of a fedora packager easier
 
 License:        MIT
-URL:            https://github.com/blinxen/%{package_name}
-Source:         %{url}/archive/%{version}/%{package_name}-%{version}.tar.gz
+URL:            https://github.com/blinxen/%{name}
+Source:         %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 BuildRequires:  python3-devel
 
-%global _description %{expand:
-CLI that make the life of a fedora packager easier.}
 
-%description %_description
-
-
-%package -n %{package_name}
-Summary:        %{summary}
-
-%description -n %{package_name} %_description
+%description
+CLI that make the life of a fedora packager easier.
 
 
 %prep
-%autosetup -n %{package_name}-%{version_no_tilde} -p1
+%autosetup -p1
 
 
 %generate_buildrequires
@@ -38,22 +29,23 @@ Summary:        %{summary}
 
 %install
 %pyproject_install
-install -D -p -m 0644 conf/fedtools.bash %{buildroot}/usr/share/bash-completion/completions/fedtools.bash
+%pyproject_save_files -L fedtools
+install -D -p -m 0644 conf/fedtools.bash %{buildroot}%{bash_completions_dir}/fedtools.bash
 
 
 %check
 
 
-%files -n %{package_name}
+%files -f %{pyproject_files}
 %doc README.md
 %license LICENSE
 %{bash_completions_dir}/fedtools.bash
-%{python3_sitelib}/%{package_name}/
-%{python3_sitelib}/%{package_name}-%{version}.dist-info/
-%{_bindir}/%{package_name}
+%{_bindir}/%{name}
 
 
 %changelog
+* Sat Jan 20 2024 blinxen <h-k-81@hotmail.com> - 0.10.2-1
+- Update to version 0.10.2
 * Fri Jan 19 2024 blinxen <h-k-81@hotmail.com> - 0.10.1-1
 - Update to version 0.10.1
 * Mon Jan 15 2024 blinxen <h-k-81@hotmail.com> - 0.10.0-1
