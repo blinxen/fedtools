@@ -89,11 +89,25 @@ def gather_package_information(path: str) -> list[dict]:
     return packages
 
 
-def lookup_version_by_prefix(versions: list, prefix: str) -> str | None:
+def lookup_version_by_prefix(versions: list, raw_prefix: str) -> str | None:
+    # Differentiate between prefixes and (not) prefixes
+    # prefixes are used to only consider versions that start with them
+    # (not) prefixes are used to ignore versions that start with them
+    if raw_prefix.startswith("!"):
+        prefix = raw_prefix[1:]
+    else:
+        prefix = raw_prefix
+
     # We assume versions is already sorted from latest to oldest versions
     for version in versions:
-        if version.startswith(prefix):
-            return version
+        if raw_prefix.startswith("!"):
+            if version.startswith(prefix):
+                continue
+            else:
+                return version
+        else:
+            if version.startswith(prefix):
+                return version
 
     return None
 

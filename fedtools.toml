@@ -11,6 +11,12 @@ version-prefix = ["v"]
 name = "example-package"
 prefix = "v1"
 
+# Definition of upstream version prefix that must not be present
+# Only consider versions that don't have the defined prefix
+[[check-versions.upstream-version-prefix]]
+name = "example-package-2"
+prefix = "!svn"
+
 [post-rust-review]
 anitya_api_key = ""
 pagure_api_key = ""
