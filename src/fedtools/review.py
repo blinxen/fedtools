@@ -17,9 +17,9 @@ REVIEW_FILE_REGEX = re.compile(r"Review template:\n ?(.*) ?\n")
 
 def ask_user(question: str) -> bool:
     yes_or_no = input(question)
-    if yes_or_no.lower() not in ["y", "n", "yes", "no"]:
-        print("Invalid input!!!\n")
-        return ask_user(question)
+    while yes_or_no.lower() not in ["y", "n", "yes", "no"]:
+        print("Invalid input!")
+        yes_or_no = input(question)
 
     return yes_or_no.lower() in ["y", "yes"]
 
