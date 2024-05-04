@@ -1,5 +1,5 @@
 Name:           fedtools
-Version:        0.11.0
+Version:        0.11.1
 Release:        1%{?dist}
 Summary:        CLI that make the life of a fedora packager easier
 
@@ -44,6 +44,8 @@ install -D -p -m 0644 conf/fedtools.bash %{buildroot}%{bash_completions_dir}/fed
 
 
 %changelog
+* Sun May 05 2024 blinxen <h-k-81@hotmail.com> - 0.11.1-1
+- Update to version 0.11.1
 * Mon Jan 29 2024 blinxen <h-k-81@hotmail.com> - 0.11.0-1
 - Update to version 0.11.0
 * Sat Jan 20 2024 blinxen <h-k-81@hotmail.com> - 0.10.2-1
