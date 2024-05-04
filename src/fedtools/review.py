@@ -5,6 +5,7 @@ import re
 import pathlib
 import os
 from fedtools.utils import exec_cmd
+import shutil
 
 
 BUGZILLA_URL = "https://bugzilla.redhat.com"
@@ -107,17 +108,16 @@ def make(args: Namespace):
     # Create review directory where we will put everything we
     # need for the review
     package_name = create_directory(bug)
+    # Run rust2rpm if this is a rust package
+    if package_name.startswith("rust-"):
+        exec_cmd(
+            "rust2rpm",
+            ["--no-existence-check", package_name[5:]],
+            check_result=False,
+        )
+        shutil.move(package_name + ".spec", f"{package_name}/generated.spec")
     # Download spec file and SRPM
     download_specfile(package_name, comments, args.y)
     download_srpm(package_name, comments, args.y)
     # Download review.txt
     download_review_template(package_name, comments, args.y)
-    # Run rust2rpm if this is a rust package
-    if package_name.startswith("rust-"):
-        with open(os.path.join(package_name, "generated.spec"), "w") as f:
-            exec_cmd(
-                "rust2rpm",
-                ["--no-existence-check", "--stdout", package_name[5:]],
-                check_result=False,
-                subprocess_arguments={"stdout": f},
-            )
