@@ -5,7 +5,7 @@ from copr.v3 import Client
 from copr.v3.exceptions import CoprRequestException
 import os
 
-from fedtools.utils import Colors
+from fedtools.utils import create_copr_repo, copr_build, LOGGER
 
 
 CHROOTS = [
@@ -43,7 +43,7 @@ def cleanup_review_copr_repos(client):
 
 def build(args: Namespace):
     if args.srpm is None and args.cleanup is False:
-        print("No command specified, use --help to see all options.")
+        LOGGER.error("No command specified, use --help to see all options.")
         exit(1)
 
     client = Client.create_from_config_file()
@@ -52,13 +52,13 @@ def build(args: Namespace):
         exit(0)
 
     if not args.srpm.endswith(".src.rpm"):
-        print("ERROR: Only SRPM files are accepted")
+        LOGGER.error("Only SRPM files are accepted")
         exit(1)
 
     copr_project_name = f"{REVIEW_PREFIX}-{os.path.basename(args.srpm)[:-8]}"
 
     create_copr_repo(client, copr_project_name)
     build_id = copr_build(client, copr_project_name, args.srpm)
-    print(
+    LOGGER.info(
         f"https://copr.fedorainfracloud.org/coprs/{client.base_proxy.auth_username()}/{copr_project_name}/build/{build_id}/"
     )

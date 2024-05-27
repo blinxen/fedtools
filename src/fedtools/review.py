@@ -4,7 +4,7 @@ from re import Pattern
 import re
 import pathlib
 import os
-from fedtools.utils import exec_cmd
+from fedtools.utils import exec_cmd, LOGGER
 import shutil
 
 
@@ -18,7 +18,7 @@ REVIEW_FILE_REGEX = re.compile(r"Review template:\n ?(.*) ?\n")
 def ask_user(question: str) -> bool:
     yes_or_no = input(question)
     while yes_or_no.lower() not in ["y", "n", "yes", "no"]:
-        print("Invalid input!")
+        LOGGER.error("Invalid input!")
         yes_or_no = input(question)
 
     return yes_or_no.lower() in ["y", "yes"]
@@ -54,7 +54,7 @@ def download_specfile(package_name: str, comments: list[dict], skip_question: bo
         )
         is False
     ):
-        print(f"Could not download spec file")
+        LOGGER.error("Could not download spec file")
         exit(1)
 
 
@@ -66,7 +66,7 @@ def download_srpm(package_name: str, comments: list[dict], skip_question: bool):
         )
         is False
     ):
-        print(f"Could not download SRPM")
+        LOGGER.error("Could not download SRPM")
         exit(1)
 
 
@@ -80,20 +80,20 @@ def download_review_template(
         )
         is False
     ):
-        print("Could not download review.txt")
+        LOGGER.error("Could not download review.txt")
 
 
 def create_directory(bug: dict) -> str:
     if match := PACKAGE_NAME_REGEX.match(bug["summary"]):
         package_name = match.group(1).strip()
     else:
-        print("Cloud not determine the package name")
+        LOGGER.error("Cloud not determine the package name")
         exit(1)
 
     if re.fullmatch(r"[\-\_\Sa-zA-Z0-9]+", package_name) is not None:
         pathlib.Path(package_name).mkdir(exist_ok=True)
     else:
-        print(f'Package name "{package_name}" is not valid')
+        LOGGER.error(f'Package name "{package_name}" is not valid')
         exit(1)
 
     return package_name

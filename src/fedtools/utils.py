@@ -71,7 +71,7 @@ def exec_cmd(
         # Execute command with the defined options
         result = subprocess.run(final_cmd, **subprocess_arguments)
     except KeyboardInterrupt:
-        print(f"{Colors.RED}\nStopping command execution.{Colors.RESET}")
+        LOGGER.error("\nStopping command execution")
         exit(1)
 
     if tail_command is False and check_result is True and result.returncode != 0:

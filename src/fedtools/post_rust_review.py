@@ -1,6 +1,6 @@
 from argparse import Namespace
 import requests
-from fedtools.utils import Colors
+from fedtools.utils import Colors, LOGGER
 from fedtools.config import Config
 
 
@@ -26,8 +26,8 @@ def monitor_package(crate_name: str, api_key: str):
         headers={"Authorization": f"token {api_key}"},
     )
     if response.status_code not in [200, 201, 409]:
-        print(Colors.RED + "Failed to create project in Anitya" + Colors.RESET)
-        print(response.text)
+        LOGGER.error("Failed to create project in Anitya")
+        LOGGER.error(response.text)
         print()
         return
 
@@ -43,12 +43,12 @@ def monitor_package(crate_name: str, api_key: str):
         headers={"Authorization": f"token {api_key}"},
     )
     if response.status_code not in [200, 201, 409]:
-        print(Colors.RED + "Failed to create package in Anitya" + Colors.RESET)
-        print(response.json().get("error", ""))
+        LOGGER.error("Failed to create package in Anitya")
+        LOGGER.error(response.json().get("error", ""))
         print()
         return
 
-    print(Colors.GREEN + "Package is now being monitored by Anitya" + Colors.RESET)
+    LOGGER.info("Package is now being monitored by Anitya")
 
 
 def rust_sig_access(package_name: str, api_key: str):
@@ -69,12 +69,12 @@ def rust_sig_access(package_name: str, api_key: str):
         headers={"Authorization": f"token {api_key}"},
     )
     if response.status_code != 200:
-        print(Colors.RED + "Failed to give rust-sig 'commit' access" + Colors.RESET)
-        print(response.text)
+        LOGGER.error("Failed to give rust-sig 'commit' access")
+        LOGGER.error(response.text)
         print()
         return
 
-    print(Colors.GREEN + "'rust-sig' has commit access to repository" + Colors.RESET)
+    LOGGER.info("'rust-sig' has commit access to repository")
 
 
 def make(args: Namespace):

@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 import tomllib
-from fedtools.utils import Colors
+from fedtools.utils import LOGGER
 
 
 FEDTOOLS_CONFIG_FILE = os.path.join(Path.home(), ".config/fedtools.toml")
@@ -12,18 +12,14 @@ class Config:
         self.__config = None
 
         if not os.path.exists(FEDTOOLS_CONFIG_FILE):
-            print(Colors.RED + "Configuration file does not exist!!" + Colors.RESET)
+            LOGGER.error("Configuration file does not exist")
             exit(1)
 
         with open(FEDTOOLS_CONFIG_FILE, "rb") as f:
             try:
                 self.__config = tomllib.load(f)
             except tomllib.TOMLDecodeError:
-                print(
-                    Colors.RED
-                    + "Configuration file has an invalid format!!"
-                    + Colors.RESET
-                )
+                LOGGER.error("Configuration file has an invalid format")
                 exit(1)
 
     def command_config(self, command_name) -> dict:
