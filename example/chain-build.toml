@@ -1,0 +1,20 @@
+# Set this to change the CWD before doing anything
+build-directory = "path-to-build-directory"
+# Copr repository name
+repository = "example"
+build-order = [
+    "step1",
+    "step2",
+]
+
+[step1]
+packages = [
+    "package1",
+    "package2"
+]
+
+[step2]
+packages = [
+    "package3",
+    "package4"
+]
