@@ -9,6 +9,7 @@ from fedtools import review
 from fedtools import fedorapeople
 from fedtools import copr_review
 from fedtools import post_rust_review
+from fedtools import copr_chain_build
 
 
 def register_check_versions_command(parser: ArgumentParser):
@@ -60,6 +61,14 @@ def register_copr_review_command(parser: ArgumentParser):
 def register_rust_review_command(parser: ArgumentParser):
     parser.add_argument("package_name", help="Name of the package")
     parser.set_defaults(func=post_rust_review.make)
+
+
+def register_copr_chain_build_command(parser: ArgumentParser):
+    parser.add_argument(
+        "config_toml",
+        help="Path to the configuration file.\n",
+    )
+    parser.set_defaults(func=copr_chain_build.build)
 
 
 def main():
@@ -121,6 +130,12 @@ def main():
             "\t2. Give 'rust-sig' commit access to the package repository\n".expandtabs(
                 4
             ),
+        )
+    )
+    # Start a chain build in copr
+    register_copr_chain_build_command(
+        subparsers.add_parser(
+            "copr-chain-build", help="Create a chain-build using copr"
         )
     )
 

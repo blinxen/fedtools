@@ -3,6 +3,15 @@ import sys
 from subprocess import CompletedProcess
 from typing import Callable
 
+from copr.v3 import Client
+from copr.v3.exceptions import CoprException, CoprNoResultException
+
+import logging
+
+
+logging.basicConfig(format="%(message)s")
+LOGGER = logging.getLogger(__name__)
+
 
 class Colors:
     RED = "\033[91m"
@@ -114,3 +123,43 @@ def search_for_dict_in_list_of_dicts_and_get_value(
         return next(filter(predicate, dicts_list)).get(key, None)
     except StopIteration:
         return None
+
+
+def create_copr_repo(
+    client: Client,
+    project_name: str,
+    chroots: list[str] = ["fedora-rawhide-x86_64"],
+    additional_options: dict = {},
+):
+    """Create a copr repository if it does not exist
+
+    Parameters:
+        client: An initialized copr Client object
+        project_name: Repository name
+        chroots: The chroots that the repository should have activated
+        additional_options: Additional options that should be activated for the copr repostiory
+    """
+
+    try:
+        client.project_proxy.get(client.base_proxy.auth_username(), project_name)
+    except CoprNoResultException as e:
+        client.project_proxy.add(
+            client.base_proxy.auth_username(),
+            project_name,
+            chroots,
+            **additional_options,
+        )
+    except CoprException as e:
+        LOGGER.error(str(e))
+        exit(1)
+
+
+def copr_build(
+    client: Client, project_name: str, srpm_path: str, buildopts: dict = {}
+) -> int:
+    LOGGER.info(f"Building {srpm_path} in {project_name}")
+    # https://python-copr.readthedocs.io/en/latest/ClientV3.html
+    build = client.build_proxy.create_from_file(
+        client.base_proxy.auth_username(), project_name, srpm_path, buildopts=buildopts
+    )
+    return build.id

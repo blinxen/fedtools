@@ -1,8 +1,6 @@
 from argparse import Namespace
 
-# https://python-copr.readthedocs.io/en/latest/ClientV3.html
 from copr.v3 import Client
-from copr.v3.exceptions import CoprRequestException
 import os
 
 from fedtools.utils import create_copr_repo, copr_build, LOGGER
@@ -15,22 +13,6 @@ CHROOTS = [
     "fedora-rawhide-ppc64le",
 ]
 REVIEW_PREFIX = "fedora-review"
-
-
-def create_copr_repo(client: Client, project_name: str):
-    try:
-        client.project_proxy.add(
-            client.base_proxy.auth_username(), project_name, CHROOTS, fedora_review=True
-        )
-    except CoprRequestException as e:
-        print(Colors.RED + str(e) + Colors.RESET)
-
-
-def copr_build(client: Client, project_name: str, srpm_path: str) -> int:
-    build = client.build_proxy.create_from_file(
-        client.base_proxy.auth_username(), project_name, srpm_path
-    )
-    return build.id
 
 
 def cleanup_review_copr_repos(client):
@@ -57,7 +39,7 @@ def build(args: Namespace):
 
     copr_project_name = f"{REVIEW_PREFIX}-{os.path.basename(args.srpm)[:-8]}"
 
-    create_copr_repo(client, copr_project_name)
+    create_copr_repo(client, copr_project_name, CHROOTS, {"fedora_review": True})
     build_id = copr_build(client, copr_project_name, args.srpm)
     LOGGER.info(
         f"https://copr.fedorainfracloud.org/coprs/{client.base_proxy.auth_username()}/{copr_project_name}/build/{build_id}/"
