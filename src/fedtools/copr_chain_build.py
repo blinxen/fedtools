@@ -5,7 +5,7 @@ import os
 import tomllib
 import glob
 
-from fedtools.utils import create_copr_repo, LOGGER, copr_build
+from fedtools.utils import create_copr_repo, LOGGER, copr_build, package_name_from_srpm
 
 
 def load_config(path: str) -> dict:
@@ -32,7 +32,7 @@ def check_copr_repository(client: Client, config: dict):
     return config["repository"]
 
 
-def parse_build_order(config: dict) -> list[str]:
+def parse_build_order(config: dict) -> list[list[str]]:
     build_order = []
     error = False
 
@@ -86,7 +86,7 @@ def parse_build_order(config: dict) -> list[str]:
     return build_order
 
 
-def chain_build(client: Client, repository: str, build_order: list[str]):
+def chain_build(client: Client, repository: str, build_order: list[list[str]]):
     previous_build_id = None
 
     for build in build_order:
@@ -111,6 +111,22 @@ def chain_build(client: Client, repository: str, build_order: list[str]):
             )
 
 
+def print_fedpkg_chain_build_command(build_order: list[list[str]]):
+    command = "fedpkg chain-build --target=<PUT_SIDE_TAG_HERE> \\\n"
+    for build in build_order[:-1]:
+        command += "    "
+        for package in build:
+            command += f"{package_name_from_srpm(package)} "
+        command += ": \\\n"
+
+    # Add last step
+    command += "    "
+    for package in build_order[-1]:
+        command += f"{package_name_from_srpm(package)} "
+
+    print(command)
+
+
 def build(args: Namespace):
     client = Client.create_from_config_file()
     if not os.path.exists(args.config_toml):
@@ -124,4 +140,9 @@ def build(args: Namespace):
     repository = check_copr_repository(client, config)
     build_order = parse_build_order(config)
 
+    if args.generate_fedpkg_command:
+        print_fedpkg_chain_build_command(build_order)
+        exit(0)
+
+    exit(1)
     chain_build(client, repository, build_order)

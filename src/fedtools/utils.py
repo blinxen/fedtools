@@ -5,6 +5,7 @@ from typing import Callable
 
 from copr.v3 import Client
 from copr.v3.exceptions import CoprException, CoprNoResultException
+import rpm
 
 import logging
 
@@ -158,9 +159,34 @@ def create_copr_repo(
 def copr_build(
     client: Client, project_name: str, srpm_path: str, buildopts: dict = {}
 ) -> int:
+    """Start a copr build
+
+    Parameters:
+        client: An initialized copr Client object
+        project_name: Repository name
+        srpm_path: Path to the SRPM file that should be used for the build
+        buildopts: Build options to pass to the copr build command
+    """
     LOGGER.info(f"Building {srpm_path} in {project_name}")
     # https://python-copr.readthedocs.io/en/latest/ClientV3.html
     build = client.build_proxy.create_from_file(
         client.base_proxy.auth_username(), project_name, srpm_path, buildopts=buildopts
     )
     return build.id
+
+
+def package_name_from_srpm(path: str) -> str:
+    """Get the package name from a SRPM file
+
+    Parameters:
+        path: Path to a SRPM file
+    """
+    package_name = None
+    with open(path, 'rb') as f:
+        try:
+            package_name = rpm.TransactionSet().hdrFromFdno(f.fileno())["name"]
+        except Exception as e:
+            LOGGER.error("Could not retrieve package name from SRPM")
+            package_name = path
+
+    return package_name
