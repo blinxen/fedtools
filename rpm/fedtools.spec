@@ -1,5 +1,5 @@
 Name:           fedtools
-Version:        0.12.0
+Version:        0.13.0
 Release:        1%{?dist}
 Summary:        CLI that make the life of a fedora packager easier
 
@@ -9,6 +9,9 @@ Source:         %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 BuildRequires:  python3-devel
+BuildRequires:  python3-rpm
+
+Requires:  python3-rpm
 
 
 %description
@@ -44,6 +47,8 @@ install -D -p -m 0644 conf/fedtools.bash %{buildroot}%{bash_completions_dir}/fed
 
 
 %changelog
+* Sat Sep 21 2024 blinxen <h-k-81@hotmail.com> - 0.13.0-1
+- Update to version 0.13.0
 * Wed May 29 2024 blinxen <h-k-81@hotmail.com> - 0.12.0-1
 - Update to version 0.12.0
 * Sun May 05 2024 blinxen <h-k-81@hotmail.com> - 0.11.1-1

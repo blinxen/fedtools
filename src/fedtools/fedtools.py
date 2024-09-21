@@ -96,7 +96,7 @@ def main():
     register_check_versions_command(
         subparsers.add_parser(
             "check-versions",
-            help="Pretty print a diff of packaged version vs upstream version.",
+            help="Compare package version with the latest upstream release.",
         )
     )
     # Download files that make package review easier
