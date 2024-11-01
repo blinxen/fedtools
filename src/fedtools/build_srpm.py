@@ -5,6 +5,10 @@ from fedtools.utils import exec_cmd
 from fedtools.config import Config
 
 
+DEFAULT_MOCK_ROOT_DIR = os.path.abspath("./mock-root")
+DEFAULT_MOCK_RESULT_DIR = os.path.abspath("./mock-result")
+
+
 def get_srpm_file_name(path: str) -> str:
     srpm_path = ""
     for line in path.split("\n"):
@@ -42,10 +46,7 @@ def build_srpm_with_fedpkg(arch: str) -> str:
     return get_srpm_file_name(result.stdout.decode("utf-8"))
 
 
-def build_binary_rpm_with_mock(
-    srpm_path: str, mock_root: str, mock_arguments: list[str]
-):
-    mock_arguments.extend(["--root", mock_root])
+def build_binary_rpm_with_mock(srpm_path: str, mock_arguments: list[str]):
     mock_arguments.append(srpm_path)
     exec_cmd("mock", mock_arguments, tail_command=True)
 
@@ -53,7 +54,7 @@ def build_binary_rpm_with_mock(
     print("Running rpmlint")
     print()
     # Run RPM lint on the built RPMs
-    for path in glob.glob(f"/var/lib/mock/{mock_root}/result/*.rpm"):
+    for path in glob.glob(f"{DEFAULT_MOCK_RESULT_DIR}/*.rpm"):
         if "src.rpm" in path:
             continue
 
@@ -68,8 +69,14 @@ def build(args: Namespace):
 
     if args.mock is True:
         config = Config().command_config(args.command)
+        mock_arguments = config.get("mock-arguments", [])
+        if "--resultdir" not in mock_arguments:
+            mock_arguments.append("--resultdir")
+            mock_arguments.append(DEFAULT_MOCK_RESULT_DIR)
+        if "--rootdir" not in mock_arguments:
+            mock_arguments.append("--rootdir")
+            mock_arguments.append(DEFAULT_MOCK_ROOT_DIR)
         build_binary_rpm_with_mock(
             srpm_path,
-            config.get("mock-root", "fedora-rawhide-x86_64"),
-            config.get("mock-arguments", []),
+            mock_arguments,
         )
