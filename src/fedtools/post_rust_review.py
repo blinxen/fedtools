@@ -1,6 +1,6 @@
 from argparse import Namespace
 import requests
-from fedtools.utils import Colors, LOGGER
+from fedtools.utils import LOGGER
 from fedtools.config import Config
 
 

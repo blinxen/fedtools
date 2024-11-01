@@ -144,7 +144,7 @@ def create_copr_repo(
 
     try:
         client.project_proxy.get(client.base_proxy.auth_username(), project_name)
-    except CoprNoResultException as e:
+    except CoprNoResultException:
         client.project_proxy.add(
             client.base_proxy.auth_username(),
             project_name,
@@ -185,7 +185,7 @@ def package_name_from_srpm(path: str) -> str:
     with open(path, "rb") as f:
         try:
             package_name = rpm.TransactionSet().hdrFromFdno(f.fileno())["name"]
-        except Exception as e:
+        except Exception:
             LOGGER.error("Could not retrieve package name from SRPM")
             package_name = path
 
