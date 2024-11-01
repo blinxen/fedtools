@@ -72,7 +72,7 @@ def register_copr_chain_build_command(parser: ArgumentParser):
         "--generate-fedpkg-command",
         required=False,
         action="store_true",
-        help="Generate a fedpkg chain-build command instead of building in copr"
+        help="Generate a fedpkg chain-build command instead of building in copr",
     )
     parser.set_defaults(func=copr_chain_build.build)
 

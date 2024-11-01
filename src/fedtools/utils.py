@@ -182,7 +182,7 @@ def package_name_from_srpm(path: str) -> str:
         path: Path to a SRPM file
     """
     package_name = None
-    with open(path, 'rb') as f:
+    with open(path, "rb") as f:
         try:
             package_name = rpm.TransactionSet().hdrFromFdno(f.fileno())["name"]
         except Exception as e:

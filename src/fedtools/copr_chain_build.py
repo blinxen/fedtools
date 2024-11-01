@@ -37,7 +37,6 @@ def parse_build_order(config: dict) -> list[list[str]]:
     error = False
 
     for build in config.get("build-order", []):
-
         if error:
             break
 
@@ -50,9 +49,8 @@ def parse_build_order(config: dict) -> list[list[str]]:
         elif config[build].get("packages"):
             packages = []
             for package in config[build].get("packages"):
-                if (
-                    not os.path.exists(package)
-                    or not glob.glob(os.path.join(package, "*.src.rpm"))
+                if not os.path.exists(package) or not glob.glob(
+                    os.path.join(package, "*.src.rpm")
                 ):
                     error = True
                     LOGGER.error(
@@ -96,19 +94,13 @@ def chain_build(client: Client, repository: str, build_order: list[list[str]]):
 
         # Start the first build and get its ID
         # With this ID we will combine the remaining packages with this build
-        current_build_id = copr_build(
-            client, repository, build[0], buildopts=options
-        )
+        current_build_id = copr_build(client, repository, build[0], buildopts=options)
         previous_build_id = current_build_id
-        options = {
-            "with_build_id": current_build_id
-        }
+        options = {"with_build_id": current_build_id}
 
         # Start building the remaining packages
         for package in build[1:]:
-            copr_build(
-                client, repository, package, buildopts=options
-            )
+            copr_build(client, repository, package, buildopts=options)
 
 
 def print_fedpkg_chain_build_command(build_order: list[list[str]]):
