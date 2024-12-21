@@ -11,6 +11,7 @@ from fedtools.utils import (
     Colors,
     check_value_of_key_in_list_of_dicts,
     search_for_dict_in_list_of_dicts_and_get_value,
+    LOGGER
 )
 import git
 
@@ -59,7 +60,7 @@ def gather_package_information(path: str) -> list[dict]:
             subprocess_arguments={"capture_output": True},
         )
         if result.returncode != 0:
-            print(f"Error processing {path}")
+            LOGGER.error(f"Could not process: {path}")
             continue
 
         content = result.stdout.decode("utf-8")
@@ -73,7 +74,7 @@ def gather_package_information(path: str) -> list[dict]:
                 version = match.group(1)
 
         if name is None or version is None or source is None:
-            print(f"WARNING: Could not parse {path} correctly!")
+            LOGGER.warning(f"Could not parse {path} correctly!")
             continue
 
         packages.append(
@@ -137,14 +138,14 @@ def get_latest_package_version(package: dict, config: dict) -> str | None:
         response = http_get(f"https://crates.io/api/v1/crates/{crate_name}")
 
         if response.status_code != 200:
-            print(f"Could not fetch crate information for {crate_name}")
-            print(f"REASON: {response.text}")
+            LOGGER.error(f"Could not fetch crate information for {crate_name}")
+            LOGGER.error(f"REASON: {response.text}")
             return
         else:
             response = response.json()
 
         if "crate" not in response:
-            print(f"WARNING: Could not determine the latest version of {crate_name}")
+            LOGGER.warning(f"Could not determine the latest version of {crate_name}")
             return
         latest_version = response["crate"].get("max_version", None)
     elif (source := urlparse(package["source"])).netloc == "github.com":
@@ -159,7 +160,7 @@ def get_latest_package_version(package: dict, config: dict) -> str | None:
             project_org = url_path[1]
             project_name = url_path[2]
         else:
-            print("Unsupported source URL for GitHub!!")
+            LOGGER.error("Unsupported source URL for GitHub!!")
             return
 
         response = http_get(
@@ -188,7 +189,7 @@ def get_latest_package_version(package: dict, config: dict) -> str | None:
         project_path = source.path[1:].split("/-/")
         if len(project_path) != 2:
             # https://gitlab.<...>.org/<user>/<proj>/archive/<tag>/<file>
-            print("WARNING: Gitlab urls without /-/ are currently not supported")
+            LOGGER.warning("Gitlab urls without /-/ are currently not supported")
             return
         else:
             # https://gitlab.<...>.org/<user>/<proj>/-/archive/<tag>/<file>
@@ -304,7 +305,7 @@ def compare_two_versions(
 def check_versions(args: Namespace):
     packages = gather_package_information(args.path)
     if not packages:
-        print("No packages were found!!")
+        LOGGER.error("No packages were found!!")
         exit(1)
 
     updatable_packages = []

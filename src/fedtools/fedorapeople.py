@@ -1,7 +1,7 @@
 import os
 from argparse import Namespace
 from pathlib import Path
-from fedtools.utils import exec_cmd
+from fedtools.utils import exec_cmd, LOGGER
 
 
 FEDORA_PEOPLE_URL = "https://blinxen.fedorapeople.org"
@@ -28,7 +28,7 @@ def get_username(username: str) -> str:
             pass
 
     if username is None:
-        print(
+        LOGGER.error(
             "Username was not specified with --username and $HOME/.fedora.upn does not exist!\n"
             "Either define --username or create the $HOME/.fedora.upn file."
         )
@@ -42,7 +42,7 @@ def upload(args: Namespace):
     username = get_username(args.username)
 
     if files:
-        print(f"Uploading: {' and '.join(files)}")
+        LOGGER.info(f"Uploading: {' and '.join(files)}")
         remote = f"{username}@fedorapeople.org"
         # Name of the package directory
         package_directory = os.path.basename(os.path.abspath(args.path))
@@ -64,7 +64,7 @@ def upload(args: Namespace):
             error_msg="Could not upload the files to the fedorapeople server!",
         )
 
-        print("Links to the uploaded files:")
+        LOGGER.info("Links to the uploaded files:")
         for file in files:
             prefix = ""
             if file.endswith(".spec"):
@@ -72,8 +72,8 @@ def upload(args: Namespace):
             elif file.endswith(".src.rpm"):
                 prefix = "SRPM URL: "
 
-            print(
+            LOGGER.info(
                 f"{prefix}{FEDORA_PEOPLE_URL}/{package_directory}/{os.path.basename(file)}"
             )
     else:
-        print("No files to upload!")
+        LOGGER.error("No files to upload!")

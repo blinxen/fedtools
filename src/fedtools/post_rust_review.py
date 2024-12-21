@@ -28,7 +28,6 @@ def monitor_package(crate_name: str, api_key: str):
     if response.status_code not in [200, 201, 409]:
         LOGGER.error("Failed to create project in Anitya")
         LOGGER.error(response.text)
-        print()
         return
 
     package_data = {
@@ -45,7 +44,6 @@ def monitor_package(crate_name: str, api_key: str):
     if response.status_code not in [200, 201, 409]:
         LOGGER.error("Failed to create package in Anitya")
         LOGGER.error(response.json().get("error", ""))
-        print()
         return
 
     LOGGER.info("Package is now being monitored by Anitya")
@@ -71,7 +69,6 @@ def rust_sig_access(package_name: str, api_key: str):
     if response.status_code != 200:
         LOGGER.error("Failed to give rust-sig 'commit' access")
         LOGGER.error(response.text)
-        print()
         return
 
     LOGGER.info("'rust-sig' has commit access to repository")

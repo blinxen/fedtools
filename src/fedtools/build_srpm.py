@@ -1,7 +1,7 @@
 import glob
 import os
 from argparse import Namespace
-from fedtools.utils import exec_cmd
+from fedtools.utils import exec_cmd, LOGGER
 from fedtools.config import Config
 
 
@@ -17,7 +17,7 @@ def get_srpm_file_name(path: str) -> str:
             break
 
     if not os.path.exists(srpm_path):
-        print("ERROR: Could not parse SRPM file name from rpmbuild output")
+        LOGGER.error("Could not parse SRPM file name from rpmbuild output")
         exit(1)
 
     return os.path.basename(srpm_path)
@@ -50,16 +50,13 @@ def build_binary_rpm_with_mock(srpm_path: str, mock_arguments: list[str]):
     mock_arguments.append(srpm_path)
     exec_cmd("mock", mock_arguments, tail_command=True)
 
-    print()
-    print("Running rpmlint")
-    print()
+    LOGGER.info("Running rpmlint")
     # Run RPM lint on the built RPMs
     for path in glob.glob(f"{DEFAULT_MOCK_RESULT_DIR}/*.rpm"):
         if "src.rpm" in path:
             continue
 
-        print()
-        print(path)
+        LOGGER.info(path)
         exec_cmd("rpmlint", [path], tail_command=True)
 
 

@@ -24,15 +24,13 @@ class Colors:
 
 
 def __pretty_print_subprocess_result(msg, result):
-    print(msg)
-    print()
-    print("----------------------STDOUT-------------------------")
-    print(result.stdout.decode("utf-8"))
-    print("-----------------------------------------------------")
-    print()
-    print("---------------------STDERR--------------------------")
-    print(result.stderr.decode("utf-8"))
-    print("-----------------------------------------------------")
+    LOGGER.info(msg + "\n")
+    LOGGER.info("----------------------STDOUT-------------------------")
+    LOGGER.info(result.stdout.decode("utf-8"))
+    LOGGER.info("-----------------------------------------------------\n")
+    LOGGER.info("---------------------STDERR--------------------------")
+    LOGGER.info(result.stderr.decode("utf-8"))
+    LOGGER.info("-----------------------------------------------------")
 
 
 def exec_cmd(
