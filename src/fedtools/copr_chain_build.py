@@ -136,5 +136,4 @@ def build(args: Namespace):
         print_fedpkg_chain_build_command(build_order)
         exit(0)
 
-    exit(1)
     chain_build(client, repository, build_order)
