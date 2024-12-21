@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fedtools"
-version = "0.14.0"
+version = "0.14.1"
 description = "Python scripts that make the life of a fedora packager (or maybe just mine) easier"
 readme = "README.md"
 authors = ["blinxen <h-k-81@hotmail.com>"]
