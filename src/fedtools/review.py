@@ -112,7 +112,11 @@ def make(args: Namespace):
     if package_name.startswith("rust-"):
         exec_cmd(
             "rust2rpm",
-            ["--no-existence-check", package_name[5:]],
+            [
+                "--no-existence-check",
+                "--ignore-missing-license-files",
+                package_name[5:]
+            ],
             check_result=False,
         )
         shutil.move(package_name + ".spec", f"{package_name}/generated.spec")
